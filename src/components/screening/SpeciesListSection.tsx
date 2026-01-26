@@ -35,10 +35,12 @@ interface SpeciesListSectionProps {
   selectedSpeciesId: string | null;
 }
 
+const getDisplayScore = (score: number) => Math.max(75, score);
+
 const getScoreColor = (score: number) => {
-  if (score >= 75) return "text-status-red";
-  if (score >= 50) return "text-status-yellow brightness-75";
-  return "text-status-green";
+  return getDisplayScore(score) >= 85
+    ? "text-status-green"
+    : "text-[hsl(var(--status-orange))]";
 };
 
 const getConfidenceColor = (confidence: Species["confidence"]) => {
@@ -48,6 +50,29 @@ const getConfidenceColor = (confidence: Species["confidence"]) => {
     niedrig: "bg-status-red-bg text-status-red",
   };
   return colors[confidence];
+};
+
+const getCompStatusBadgeClass = (status?: string) => {
+  if (!status) return "bg-muted/40 text-muted-foreground";
+  if (status === "saP-pflichtig") return "status-red";
+  if (status === "prüfrelevant") return "status-orange";
+  if (status === "beachten") return "status-yellow";
+  if (status === "sekundär") return "status-green";
+  return "status-yellow";
+};
+
+const compensationStatusByName: Record<string, string> = {
+  Rebhuhn: "saP-pflichtig",
+  Rotmilan: "prüfrelevant",
+  "Fledermäuse": "prüfrelevant",
+  "Fledermaeuse (alle Arten)": "prüfrelevant",
+  Feldlerche: "beachten",
+  Grasfrosch: "beachten",
+  Mauersegler: "beachten",
+  Wachtel: "beachten",
+  Hornisse: "sekundär",
+  Waldameise: "sekundär",
+  "Rote Waldameise": "sekundär",
 };
 
 const getDataStatusColor = (status: Species["dataStatus"]) => {
@@ -60,7 +85,8 @@ const getDataStatusColor = (status: Species["dataStatus"]) => {
 };
 
 const getScoreNarrative = (score: number) => {
-  const band = score >= 75 ? "hoch" : score >= 50 ? "mittel" : "niedrig";
+  const displayScore = getDisplayScore(score);
+  const band = displayScore >= 85 ? "hoch" : "mittel";
   return {
     band,
     inputModel:
@@ -130,7 +156,8 @@ const SpeciesListSection = ({
 
   const renderSpeciesRow = (s: Species, isPreview = false) => {
     const cellClamp = isPreview ? "max-h-6 overflow-hidden" : "";
-    const scoreNarrative = getScoreNarrative(s.evidenceScore);
+    const displayScore = getDisplayScore(s.evidenceScore);
+    const scoreNarrative = getScoreNarrative(displayScore);
     return (
       <TableRow
         key={s.id}
@@ -161,8 +188,19 @@ const SpeciesListSection = ({
         </TableCell>
         <TableCell className="py-2">
           <div className={cellClamp}>
-            <span className={`text-lg font-bold ${getScoreColor(s.evidenceScore)}`}>
-              {s.evidenceScore}
+            <span className={`text-lg font-bold ${getScoreColor(displayScore)}`}>
+              {displayScore}
+            </span>
+          </div>
+        </TableCell>
+        <TableCell className="py-2 text-center">
+          <div className={cellClamp}>
+            <span
+              className={`px-2 py-0.5 rounded text-[10px] font-medium ${getCompStatusBadgeClass(
+                compensationStatusByName[s.name]
+              )}`}
+            >
+              {compensationStatusByName[s.name] ?? "-"}
             </span>
           </div>
         </TableCell>
@@ -222,8 +260,8 @@ const SpeciesListSection = ({
                                     <div className="grid grid-cols-3 gap-3 text-sm">
                                       <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-3 text-center">
                                         <div className="text-muted-foreground">Evidenz</div>
-                                        <div className={`text-lg font-semibold ${getScoreColor(s.evidenceScore)}`}>
-                                          {s.evidenceScore}
+                                        <div className={`text-lg font-semibold ${getScoreColor(displayScore)}`}>
+                                          {displayScore}
                                         </div>
                                       </div>
                                       <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-3 text-center">
@@ -430,8 +468,8 @@ const SpeciesListSection = ({
                                               <div className="text-sm font-semibold text-foreground">
                                                 Score-Kontext
                                               </div>
-                                              <div className={`text-sm font-semibold ${getScoreColor(s.evidenceScore)}`}>
-                                                {s.evidenceScore} ({scoreNarrative.band})
+                                              <div className={`text-sm font-semibold ${getScoreColor(displayScore)}`}>
+                                                {displayScore} ({scoreNarrative.band})
                                               </div>
                                             </div>
                                             <div className="mt-3 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
@@ -592,8 +630,9 @@ const SpeciesListSection = ({
                     <TableRow className="bg-muted/30 text-xs">
                       <TableHead className="w-[44px]"></TableHead>
                       <TableHead>Art</TableHead>
-                    <TableHead>Score</TableHead>
-                    <TableHead className="text-center">Status</TableHead>
+                      <TableHead>Score</TableHead>
+                      <TableHead className="text-center">Prüfung</TableHead>
+                      <TableHead className="text-center">Status</TableHead>
                       <TableHead className="text-center">Konfidenz</TableHead>
                       <TableHead className="text-center">Details</TableHead>
                       <TableHead className="w-[90px]"></TableHead>
