@@ -37,6 +37,8 @@
     --status-red-bg: 0 72% 95%;
     --status-yellow: 43 96% 50%;
     --status-yellow-bg: 43 96% 94%;
+    --status-orange: 24 95% 55%;
+    --status-orange-bg: 24 95% 92%;
     --status-green: 142 71% 40%;
     --status-green-bg: 142 71% 94%;
 
@@ -168,7 +170,11 @@
   }
 
   .status-yellow {
-    @apply bg-[hsl(var(--status-yellow-bg))] text-[hsl(var(--status-yellow))] brightness-75;
+    @apply bg-[hsl(var(--status-yellow-bg))] text-[hsl(var(--status-yellow))];
+  }
+
+  .status-orange {
+    @apply bg-[hsl(var(--status-orange-bg))] text-[hsl(var(--status-orange))];
   }
 
   .status-green {

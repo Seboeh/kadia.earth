@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { motion } from "framer-motion";
 import { Leaf, Download, MapPin, RefreshCcw, Ruler, LocateFixed, CalendarClock, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Card } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { ScreeningResult } from "@/data/dummyData";
 import RedFlagsSection from "./RedFlagsSection";
@@ -34,7 +33,7 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<string | null>(null);
   const [isEnvOpen, setIsEnvOpen] = useState(true);
   const [showAllEnvRows, setShowAllEnvRows] = useState(false);
-  const [isSpeciesTableOpen, setIsSpeciesTableOpen] = useState(false);
+  const [isCompTableOpen, setIsCompTableOpen] = useState(true);
   const analysisDate = new Date(results.analysis.timestamp);
   const analysisTimestamp = Number.isNaN(analysisDate.getTime())
     ? results.analysis.timestamp
@@ -148,16 +147,6 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
   const landcoverSiedlung = getLandcoverPercent("siedlung");
   const areaHectares = results.area.flaeche_ha;
   const formatHectares = (value: number) => Math.max(0.1, value).toFixed(1);
-  const oekopunkteParts = [
-    { label: "Acker", percent: landcoverAcker, factor: 6 },
-    { label: "Wald", percent: landcoverWald, factor: 20 },
-    { label: "Wasser", percent: landcoverWasser, factor: 15 },
-  ].filter((item) => item.percent > 0);
-  const oekopunkteIndex = oekopunkteParts.reduce(
-    (total, item) => total + (item.percent * item.factor) / 100,
-    0
-  );
-  const oekopunkteScore = Math.round(oekopunkteIndex * 1000);
   const speciesCompensationHints: Record<
     string,
     { label: string; areaFactor: number; bufferM?: number; distanceKm?: number }
@@ -213,10 +202,10 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
       const score = species.evidenceScore;
       const compensationNeed =
         score >= 85
-          ? "Eignung hoch"
-          : score >= 80
-            ? "Eignung grenzwertig"
-            : "Eignung kritisch";
+          ? "Hoch"
+          : score >= 60
+            ? "Grenzwertig"
+            : "Kritisch";
 
       return {
         id: species.id,
@@ -224,9 +213,138 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
         score,
         habitatLabel,
         shareLabel,
+        habitatShare,
         compensationNeed,
       };
     });
+  const getEignungBadgeClass = (score: number) => {
+    if (score >= 85) return "status-green";
+    if (score >= 60) return "status-yellow";
+    return "status-orange";
+  };
+  const speciesLegalById = results.species.reduce<Record<string, string>>((acc, species) => {
+    acc[species.id] = species.legalLabels[0] ?? "Keine Angabe";
+    return acc;
+  }, {});
+  const getUnbHandlungsbedarf = (speciesName: string) => {
+    const hint = speciesCompensationHints[speciesName];
+    if (!hint) return "Keine Angabe";
+    const parts = [hint.label];
+    if (hint.bufferM) parts.push(`Puffer ${hint.bufferM} m`);
+    if (hint.distanceKm) parts.push(`Abstand ${hint.distanceKm} km`);
+    return parts.join(" + ");
+  };
+  const compensationTableRows = sdmSpeciesRows
+    .map((item) => {
+      const legalLabel = speciesLegalById[item.id] ?? "Keine Angabe";
+      const habitatAreaHa = formatHectares((areaHectares * item.habitatShare) / 100);
+      const groupLabel =
+        legalLabel.toLowerCase().includes("ffh") && item.score < 60
+          ? "Kritische Arten"
+          : item.score >= 85
+            ? "Hochrelevante Arten"
+            : item.score >= 60
+              ? "Grenzwertig (Screening)"
+              : "Überwachung";
+      return {
+        ...item,
+        legalLabel,
+        habitatDetail: `${item.habitatLabel} (${habitatAreaHa} ha)`,
+        unbHandlungsbedarf: getUnbHandlungsbedarf(item.name),
+        groupLabel,
+      };
+    })
+    .sort((a, b) => b.score - a.score);
+  const groupedCompensationRows = [
+    "Kritische Arten",
+    "Hochrelevante Arten",
+    "Grenzwertig (Screening)",
+    "Überwachung",
+  ]
+    .map((label) => ({
+      label,
+      rows: compensationTableRows.filter((row) => row.groupLabel === label),
+    }))
+    .filter((group) => group.rows.length > 0);
+  const getCompGroupClass = (label: string) => {
+    if (label === "Kritische Arten") return "bg-status-red-bg text-status-red";
+    if (label === "Hochrelevante Arten") return "bg-status-yellow/15 text-status-yellow";
+    if (label === "Grenzwertig (Screening)") return "bg-status-orange/15 text-status-orange";
+    if (label === "Überwachung") return "bg-status-green-bg text-status-green";
+    return "bg-muted/20 text-muted-foreground";
+  };
+  const landcoverEntries = [
+    { label: "Acker", percent: landcoverAcker, value: 6 },
+    { label: "Wald", percent: landcoverWald, value: 20 },
+    { label: "Wasser", percent: landcoverWasser, value: 15 },
+    { label: "Siedlung", percent: landcoverSiedlung, value: 0 },
+  ];
+  const biotopeRows = landcoverEntries
+    .filter((entry) => entry.percent > 0 || entry.label === "Siedlung")
+    .map((entry) => {
+      const areaHa = (areaHectares * entry.percent) / 100;
+      const points = Math.round(areaHa * entry.value * 100);
+      return {
+        ...entry,
+        areaHa,
+        points,
+      };
+    });
+  const totalBiotopePoints = biotopeRows.reduce((sum, row) => sum + row.points, 0);
+  const habitatImpactShare = sdmSpeciesRows.length
+    ? Math.round(
+        sdmSpeciesRows.reduce((sum, row) => sum + row.habitatShare, 0) / sdmSpeciesRows.length
+      )
+    : 0;
+  const impactSeverity =
+    habitatImpactShare < 10
+      ? {
+          label: "keine",
+          abbr: "--",
+          consequence: "Keine Kompensation",
+          restRatio: 0.9,
+          multiplier: 1,
+        }
+      : habitatImpactShare <= 50
+        ? {
+            label: "erheblich",
+            abbr: "eB",
+            consequence: "Standard-Kompensation",
+            restRatio: 0.5,
+            multiplier: 1,
+          }
+        : {
+            label: "bes. schwer",
+            abbr: "eBS",
+            consequence: "Artenspezifische Massnahmen",
+            restRatio: 0.2,
+            multiplier: 2,
+          };
+  const severityTone =
+    impactSeverity.abbr === "--"
+      ? {
+          label: "Keine Eingriffsrelevanz",
+          dot: "bg-status-green",
+          text: "text-status-green",
+          badge: "bg-status-green-bg text-status-green",
+        }
+      : impactSeverity.abbr === "eB"
+        ? {
+            label: "Eingriff erheblich",
+            dot: "bg-status-yellow",
+            text: "text-status-yellow",
+            badge: "bg-status-yellow/15 text-status-yellow",
+          }
+        : {
+            label: "Eingriff bes. schwer",
+            dot: "bg-status-red",
+            text: "text-status-red",
+            badge: "bg-status-red-bg text-status-red",
+          };
+  const remainingPoints = Math.round(totalBiotopePoints * impactSeverity.restRatio);
+  const deltaPoints = Math.max(0, totalBiotopePoints - remainingPoints);
+  const compensationNeedPoints = Math.round(deltaPoints * impactSeverity.multiplier);
+  const formatPoints = (value: number) => value.toLocaleString("de-DE");
 
   const renderEnvRow = (section: (typeof environmentalSections)[number], isPreview = false) => {
     const contentClamp = isPreview ? "max-h-20 overflow-hidden" : "";
@@ -295,7 +413,7 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
               className="gap-2 gradient-hero text-primary-foreground"
             >
               <Download className="w-4 h-4" />
-              Report exportieren
+              Export
             </Button>
           </div>
         </div>
@@ -473,120 +591,120 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
           </h2>
           <Card className="card-elevated overflow-hidden">
             <div className="p-4">
-              <div className="grid gap-4">
-                <div className="rounded-xl border border-border/40 bg-background/70 p-4">
-                  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Eingriffsfläche
-                  </div>
-                  <div className="mt-2 flex items-end gap-2">
-                    <div className="text-2xl font-semibold text-foreground">
-                      {formatHectares(areaHectares)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">ha</div>
-                  </div>
-                  <div className="mt-4 rounded-lg border border-border/40 bg-background/60 p-3">
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs font-semibold text-foreground">Ökopunkte</div>
-                      <span className="rounded-full bg-status-green-bg px-2.5 py-0.5 text-[11px] font-semibold text-status-green">
-                        {oekopunkteScore.toLocaleString("de-DE")}
+              <div className="rounded-xl border border-border/40 bg-background/70 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <span
+                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${severityTone.badge}`}
+                    >
+                      <span className={`h-2.5 w-2.5 rounded-full ${severityTone.dot}`} />
+                      {impactSeverity.abbr} - {impactSeverity.label}
+                    </span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold text-foreground">
+                        Kompensation notwendig
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {habitatImpactShare}% Habitatverlust
                       </span>
                     </div>
-                    <div className="mt-3 grid gap-2 text-[11px] text-muted-foreground">
-                      {oekopunkteParts.map((item) => (
-                        <div
-                          key={item.label}
-                          className="flex items-center justify-between rounded-md border border-border/40 bg-background/70 px-2.5 py-2"
-                        >
-                          <span>
-                            {item.label} {item.percent}% x {item.factor}
-                          </span>
-                          <span className="text-foreground">
-                            {((item.percent * item.factor) / 100).toFixed(2)}
-                          </span>
-                        </div>
-                      ))}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-semibold text-foreground">
+                      {formatPoints(compensationNeedPoints)}
                     </div>
+                    <div className="text-xs text-muted-foreground">Oekopunkte</div>
                   </div>
                 </div>
-                <div className="rounded-xl border border-border/40 bg-background/70 p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                        Planungsrelevante Arten
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Priorisierung aus SDM-Daten (Score &gt; 50)
-                      </div>
+              </div>
+              <div className="rounded-xl border border-border/40 bg-background/70 p-4">
+                <Collapsible open={isCompTableOpen} onOpenChange={setIsCompTableOpen}>
+                  <div className="flex items-center justify-between gap-3 px-2 pb-3">
+                    <div className="text-sm font-semibold text-foreground">
+                      Artenbezogene Kompensationsliste
                     </div>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" size="sm" className="gap-2">
+                        {isCompTableOpen ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
+                        {isCompTableOpen ? "Ausblenden" : "Einblenden"}
+                      </Button>
+                    </CollapsibleTrigger>
                   </div>
-                  <Collapsible open={isSpeciesTableOpen} onOpenChange={setIsSpeciesTableOpen}>
-                    <div className="mt-3 flex items-center justify-between">
-                      <div className="text-xs text-muted-foreground">
-                        {sdmSpeciesRows.length} Arten
-                      </div>
-                      <CollapsibleTrigger asChild>
-                        <Button variant="outline" size="sm" className="h-7 w-7 p-0">
-                          {isSpeciesTableOpen ? (
-                            <ChevronUp className="w-4 h-4" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </CollapsibleTrigger>
-                    </div>
-                    <CollapsibleContent>
-                      <div className="mt-3 overflow-x-auto">
-                        <UITable className="min-w-[640px]">
-                          <TableHeader>
-                            <TableRow className="bg-muted/30 text-xs">
-                          <TableHead>Art</TableHead>
-                          <TableHead className="w-[90px]">Eignung</TableHead>
-                          <TableHead>Passendes Habitat</TableHead>
-                          <TableHead>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <span className="inline-flex cursor-help border-b border-dotted border-muted-foreground/50">
-                                    Anteil Eingriffsfläche
-                                  </span>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  Anteil der Eingriffsfläche, der zum passenden Habitattyp der Art zählt.
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </TableHead>
-                          <TableHead>Kompensationsbedarf</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {sdmSpeciesRows.map((item) => (
-                            <TableRow key={item.id} className="text-xs">
-                              <TableCell className="font-medium text-foreground">
-                                {item.name}
-                              </TableCell>
-                              <TableCell>
-                                <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-accent-foreground">
-                                  {item.score}%
-                                </span>
-                              </TableCell>
-                              <TableCell className="text-muted-foreground">{item.habitatLabel}</TableCell>
-                              <TableCell>
-                                <span className="rounded-full border border-border/50 bg-muted/40 px-2 py-0.5 text-[11px] text-muted-foreground">
-                                  {item.shareLabel}
-                                  </span>
-                                </TableCell>
-                            <TableCell className="text-muted-foreground">
-                              {item.compensationNeed}
-                            </TableCell>
+                  <CollapsibleContent>
+                    <div className="overflow-x-auto">
+                      <UITable className="min-w-[980px]">
+                        <TableHeader>
+                          <TableRow className="bg-muted/30 text-xs">
+                            <TableHead>Art</TableHead>
+                            <TableHead>Habitat</TableHead>
+                            <TableHead>Eingriffsfläche</TableHead>
+                            <TableHead>Evidenz</TableHead>
+                            <TableHead>Relevanz</TableHead>
+                            <TableHead>UNB-Handlungsbedarf</TableHead>
                           </TableRow>
-                            ))}
-                          </TableBody>
-                        </UITable>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
+                        </TableHeader>
+                        <TableBody>
+                          {groupedCompensationRows.map((group) => (
+                            <Fragment key={group.label}>
+                              <TableRow className={`text-xs ${getCompGroupClass(group.label)}`}>
+                                <TableCell
+                                  colSpan={6}
+                                  className="py-2 text-[11px] font-semibold uppercase tracking-wide"
+                                >
+                                  {group.label}
+                                </TableCell>
+                              </TableRow>
+                              {group.rows.map((row) => (
+                                <TableRow key={row.id} className="text-xs">
+                                  <TableCell>
+                                    <div className="font-medium text-foreground">{row.name}</div>
+                                    <div className="text-[11px] text-muted-foreground">
+                                      {row.legalLabel === "Keine Angabe" ? "-" : row.legalLabel}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {row.habitatDetail}
+                                  </TableCell>
+                                  <TableCell>
+                                    <span className="rounded-full border border-border/50 bg-muted/40 px-2 py-0.5 text-[11px] text-muted-foreground">
+                                      {row.shareLabel}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell>
+                                    <span
+                                      className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${getEignungBadgeClass(
+                                        row.score
+                                      )}`}
+                                    >
+                                      {row.score}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {row.compensationNeed}
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {row.unbHandlungsbedarf}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </Fragment>
+                          ))}
+                          {groupedCompensationRows.length === 0 && (
+                            <TableRow className="text-xs">
+                              <TableCell className="text-muted-foreground" colSpan={6}>
+                                Keine priorisierten Arten im Datensatz.
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </UITable>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
             </div>
           </Card>

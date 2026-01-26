@@ -368,7 +368,7 @@ export const generateDummyResult = (
         group: "Amphibien",
         groupIcon: "Am",
         legalLabels: ["FFH-Richtlinie Anhang IV(a)"],
-        evidenceScore: 62,
+        evidenceScore: 59,
         confidence: "mittel",
         dataStatus: "Modellhinweis",
         effects: ["Habitatverlust", "Barriere"],
@@ -726,7 +726,6 @@ export const loadingSteps = [
   { id: 4, label: "Arten priorisieren...", duration: 700 },
   { id: 5, label: "Red Flags ableiten...", duration: 500 },
 ];
-
 
 
 
