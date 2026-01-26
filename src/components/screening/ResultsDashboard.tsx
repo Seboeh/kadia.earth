@@ -442,24 +442,6 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
               </div>
               <div className="mt-2 text-base text-foreground">{locationLabel}</div>
             </div>
-            <div className="mt-4 flex flex-col gap-3 text-sm sm:flex-row">
-              <div className="flex-1 rounded-lg border border-border/40 bg-background px-3 py-2">
-                <div className="flex items-center gap-2 text-foreground font-medium">
-                  <AlertTriangle className="w-4 h-4 text-primary" />
-                  Kompensation
-                </div>
-                <div className="mt-1 text-foreground">eB - Kompensation notwendig</div>
-              </div>
-              <div className="flex-1 rounded-lg border border-border/40 bg-background px-3 py-2">
-                <div className="flex items-center gap-2 text-foreground font-medium">
-                  <Leaf className="w-4 h-4 text-primary" />
-                  Oekopunkte
-                </div>
-                <div className="mt-1 text-foreground">
-                  {formatPoints(compensationNeedPoints)}
-                </div>
-              </div>
-            </div>
             <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-lg border border-border/40 bg-background px-3 py-2">
                 <div className="flex items-center gap-2 text-foreground font-medium">
@@ -488,6 +470,24 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
                   Analyse-ID
                 </div>
                 <div className="mt-1 text-foreground">{results.analysis.id}</div>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col gap-3 text-sm sm:flex-row">
+              <div className="flex-1 rounded-lg border border-border/40 bg-background px-3 py-2">
+                <div className="flex items-center gap-2 text-foreground font-medium">
+                  <AlertTriangle className="w-4 h-4 text-primary" />
+                  Kompensation
+                </div>
+                <div className="mt-1 text-foreground">eB - Kompensation notwendig</div>
+              </div>
+              <div className="flex-1 rounded-lg border border-border/40 bg-background px-3 py-2">
+                <div className="flex items-center gap-2 text-foreground font-medium">
+                  <Leaf className="w-4 h-4 text-primary" />
+                  Ökopunkte
+                </div>
+                <div className="mt-1 text-foreground">
+                  {formatPoints(compensationNeedPoints)}
+                </div>
               </div>
             </div>
           </div>
