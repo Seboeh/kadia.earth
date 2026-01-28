@@ -276,6 +276,87 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
       status: "sekundär",
     },
   ];
+  const biotopBalanceRows = [
+    {
+      id: "b1",
+      impact: "Intensivacker",
+      area: "43.6 ha",
+      code: "HA1",
+      value: "2 P/ha",
+      points: "87 ÖP",
+    },
+    {
+      id: "b2",
+      impact: "Laubwald 50%",
+      area: "24.1 ha",
+      code: "lrt50,g",
+      value: "6 P/ha",
+      points: "145 ÖP",
+    },
+  ];
+  const biotopBalanceTotal = {
+    area: "67.7 ha",
+    points: "232 ÖP",
+  };
+  const biotopUpgradeRows = [
+    {
+      id: "u1",
+      fromArea: "43.6 ha Acker",
+      toArea: "43.6 ha Brache",
+      fromCode: "HA1 (2)",
+      toCode: "HB0a (5)",
+      delta: "+3 Punkte/ha",
+      fromPoints: "87 ÖP",
+      toPoints: "218 ÖP",
+      gain: "+131 ÖP",
+    },
+    {
+      id: "u2",
+      fromArea: "24.1 ha Wald 50%",
+      toArea: "24.1 ha Wald 90%",
+      fromCode: "lrt50 (6)",
+      toCode: "lrt90 (9)",
+      delta: "+3 Punkte/ha",
+      fromPoints: "145 ÖP",
+      toPoints: "217 ÖP",
+      gain: "+72 ÖP",
+    },
+  ];
+  const biotopUpgradeSummary = "GESAMT: 232 ÖP verloren → 435 ÖP neu = 115% DECKUNG ✅";
+  const biotopUpgradeFormula =
+    "Formel: Neuer BT-Wert > Alter BT-Wert × gleiche Fläche = ÖP-Überschuss";
+  const speciesCoverageRows = [
+    {
+      id: "s1",
+      art: "Rebhuhn",
+      status: "🔴",
+      law: "FFH",
+      need: "Ackerbrache (offene Fläche)",
+      measure: "HB0a – 52 ha Staudenbrache",
+      coverage: "90/100% 🟢",
+      result: "Brut- + Nahrungsraum erfüllt",
+    },
+    {
+      id: "s2",
+      art: "Rotmilan",
+      status: "🟠",
+      law: "§44",
+      need: "Alte Bäume (Horste)",
+      measure: "lrt90 – 24.1 ha Qualitätswald",
+      coverage: "95/100% 🟢",
+      result: "Neststandorte gesichert",
+    },
+    {
+      id: "s3",
+      art: "Fledermäuse",
+      status: "🟠",
+      law: "FFH",
+      need: "Baumhöhlen (Totholz)",
+      measure: "Totholz in lrt90 Wald",
+      coverage: "88/100% 🟢",
+      result: "Sommerquartiere verfügbar",
+    },
+  ];
   const landcoverEntries = [
     { label: "Acker", percent: landcoverAcker, value: 6 },
     { label: "Wald", percent: landcoverWald, value: 20 },
@@ -442,7 +523,7 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
               </div>
               <div className="mt-2 text-base text-foreground">{locationLabel}</div>
             </div>
-            <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-5">
               <div className="rounded-lg border border-border/40 bg-background px-3 py-2">
                 <div className="flex items-center gap-2 text-foreground font-medium">
                   <Ruler className="w-4 h-4 text-primary" />
@@ -471,16 +552,7 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
                 </div>
                 <div className="mt-1 text-foreground">{results.analysis.id}</div>
               </div>
-            </div>
-            <div className="mt-4 flex flex-col gap-3 text-sm sm:flex-row">
-              <div className="flex-1 rounded-lg border border-border/40 bg-background px-3 py-2">
-                <div className="flex items-center gap-2 text-foreground font-medium">
-                  <AlertTriangle className="w-4 h-4 text-primary" />
-                  Kompensation
-                </div>
-                <div className="mt-1 text-foreground">eB - Kompensation notwendig</div>
-              </div>
-              <div className="flex-1 rounded-lg border border-border/40 bg-background px-3 py-2">
+              <div className="rounded-lg border border-border/40 bg-background px-3 py-2">
                 <div className="flex items-center gap-2 text-foreground font-medium">
                   <Leaf className="w-4 h-4 text-primary" />
                   Ökopunkte
@@ -576,7 +648,7 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
                     </CollapsibleTrigger>
                   </div>
                   <CollapsibleContent>
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto hidden">
                       <UITable className="min-w-[980px]">
                           <TableHeader>
                             <TableRow className="bg-muted/30 text-xs">
@@ -626,6 +698,142 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
                             )}
                           </TableBody>
                       </UITable>
+                    </div>
+                    <div className="space-y-6">
+                      <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                          Biotopbilanz
+                        </div>
+                        <div className="mt-3 overflow-x-auto">
+                          <UITable className="min-w-[820px]">
+                            <TableHeader>
+                              <TableRow className="bg-muted/30 text-xs">
+                                <TableHead>Eingriff</TableHead>
+                                <TableHead>Fläche</TableHead>
+                                <TableHead>BT-Code</TableHead>
+                                <TableHead>BT-Wert</TableHead>
+                                <TableHead>ÖP verloren</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {biotopBalanceRows.map((row) => (
+                                <TableRow key={row.id} className="text-xs">
+                                  <TableCell className="font-medium text-foreground">
+                                    {row.impact}
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {row.area}
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {row.code}
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {row.value}
+                                  </TableCell>
+                                  <TableCell className="font-semibold text-foreground">
+                                    {row.points}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                              <TableRow className="bg-muted/20 text-xs">
+                                <TableCell className="font-semibold text-foreground">
+                                  ∑ Eingriff
+                                </TableCell>
+                                <TableCell className="text-muted-foreground">
+                                  {biotopBalanceTotal.area}
+                                </TableCell>
+                                <TableCell />
+                                <TableCell />
+                                <TableCell className="font-semibold text-foreground">
+                                  {biotopBalanceTotal.points}
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </UITable>
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-border/50 bg-background/80 p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+                          <div className="font-semibold text-foreground">
+                            Benötigtes Flächen-Upgrade
+                          </div>
+                          <div className="text-muted-foreground">
+                            SCHLECHT → GUT = ÖP-GEWINN
+                          </div>
+                        </div>
+                        <div className="mt-4 space-y-4 text-xs">
+                          {biotopUpgradeRows.map((row) => (
+                            <div key={row.id} className="grid gap-3 md:grid-cols-3">
+                              <div className="rounded-lg border border-border/50 bg-muted/10 p-3">
+                                <div className="text-muted-foreground">{row.fromArea}</div>
+                                <div className="font-semibold text-foreground">{row.fromCode}</div>
+                                <div className="mt-2 text-muted-foreground">
+                                  {row.fromPoints}
+                                </div>
+                              </div>
+                              <div className="rounded-lg border border-border/50 bg-muted/10 p-3">
+                                <div className="text-muted-foreground">{row.toArea}</div>
+                                <div className="font-semibold text-foreground">{row.toCode}</div>
+                                <div className="mt-2 text-muted-foreground">{row.toPoints}</div>
+                              </div>
+                              <div className="rounded-lg border border-border/50 bg-emerald-500/10 p-3">
+                                <div className="text-muted-foreground">{row.delta}</div>
+                                <div className="font-semibold text-emerald-400">{row.gain} 🟢</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-4 text-sm font-semibold text-foreground">
+                          {biotopUpgradeSummary}
+                        </div>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {biotopUpgradeFormula}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                          Artdeckung
+                        </div>
+                        <div className="mt-3 overflow-x-auto">
+                          <UITable className="min-w-[900px]">
+                            <TableHeader>
+                              <TableRow className="bg-muted/30 text-xs">
+                                <TableHead>Art</TableHead>
+                                <TableHead>🔴 Bedarf</TableHead>
+                                <TableHead>✅ Maßnahme</TableHead>
+                                <TableHead>📊 Deckung</TableHead>
+                                <TableHead>🎯 Ergebnis</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {speciesCoverageRows.map((row) => (
+                                <TableRow key={row.id} className="text-xs">
+                                  <TableCell className="font-semibold text-foreground">
+                                    {row.status} {row.art} {row.law}
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {row.need}
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {row.measure}
+                                  </TableCell>
+                                  <TableCell className="text-emerald-400">
+                                    {row.coverage}
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {row.result}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </UITable>
+                        </div>
+                        <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
+                          ✓ ALLE prüfrelevanten Arten abgedeckt
+                        </div>
+                      </div>
                     </div>
                   </CollapsibleContent>
                 </Collapsible>
