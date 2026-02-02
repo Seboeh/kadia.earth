@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Leaf,
@@ -26,6 +26,12 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { ScreeningResult } from "@/data/dummyData";
 import RedFlagsSection from "./RedFlagsSection";
@@ -38,12 +44,24 @@ interface ResultsDashboardProps {
   onReset: () => void;
 }
 
+type CompensationRow = {
+  id: string;
+  name: string;
+  scientificName: string;
+  legalLabel: string;
+  habitatDetail: string;
+  shareLabel: string;
+  score: number;
+  status: string;
+};
+
 const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedSpeciesId, setSelectedSpeciesId] = useState<string | null>(null);
   const [isEnvOpen, setIsEnvOpen] = useState(true);
   const [showAllEnvRows, setShowAllEnvRows] = useState(false);
   const [isCompTableOpen, setIsCompTableOpen] = useState(false);
+  const [detailRow, setDetailRow] = useState<CompensationRow | null>(null);
   const analysisDate = new Date(results.analysis.timestamp);
   const analysisTimestamp = Number.isNaN(analysisDate.getTime())
     ? results.analysis.timestamp
@@ -210,11 +228,7 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
         compensationNeed,
       };
     });
-  const getEignungBadgeClass = (score: number) => {
-    if (score >= 85) return "status-green";
-    return "status-orange";
-  };
-  const compensationTableRows = [
+  const compensationTableRows: CompensationRow[] = [
     {
       id: "c1",
       name: "🔴 Rebhuhn",
@@ -274,87 +288,6 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
       shareLabel: "52%",
       score: 54,
       status: "sekundär",
-    },
-  ];
-  const biotopBalanceRows = [
-    {
-      id: "b1",
-      impact: "Intensivacker",
-      area: "43.6 ha",
-      code: "HA1",
-      value: "2 P/ha",
-      points: "87 ÖP",
-    },
-    {
-      id: "b2",
-      impact: "Laubwald 50%",
-      area: "24.1 ha",
-      code: "lrt50,g",
-      value: "6 P/ha",
-      points: "145 ÖP",
-    },
-  ];
-  const biotopBalanceTotal = {
-    area: "67.7 ha",
-    points: "232 ÖP",
-  };
-  const biotopUpgradeRows = [
-    {
-      id: "u1",
-      fromArea: "43.6 ha Acker",
-      toArea: "43.6 ha Brache",
-      fromCode: "HA1 (2)",
-      toCode: "HB0a (5)",
-      delta: "+3 Punkte/ha",
-      fromPoints: "87 ÖP",
-      toPoints: "218 ÖP",
-      gain: "+131 ÖP",
-    },
-    {
-      id: "u2",
-      fromArea: "24.1 ha Wald 50%",
-      toArea: "24.1 ha Wald 90%",
-      fromCode: "lrt50 (6)",
-      toCode: "lrt90 (9)",
-      delta: "+3 Punkte/ha",
-      fromPoints: "145 ÖP",
-      toPoints: "217 ÖP",
-      gain: "+72 ÖP",
-    },
-  ];
-  const biotopUpgradeSummary = "GESAMT: 232 ÖP verloren → 435 ÖP neu = 115% DECKUNG ✅";
-  const biotopUpgradeFormula =
-    "Formel: Neuer BT-Wert > Alter BT-Wert × gleiche Fläche = ÖP-Überschuss";
-  const speciesCoverageRows = [
-    {
-      id: "s1",
-      art: "Rebhuhn",
-      status: "🔴",
-      law: "FFH",
-      need: "Ackerbrache (offene Fläche)",
-      measure: "HB0a – 52 ha Staudenbrache",
-      coverage: "90/100% 🟢",
-      result: "Brut- + Nahrungsraum erfüllt",
-    },
-    {
-      id: "s2",
-      art: "Rotmilan",
-      status: "🟠",
-      law: "§44",
-      need: "Alte Bäume (Horste)",
-      measure: "lrt90 – 24.1 ha Qualitätswald",
-      coverage: "95/100% 🟢",
-      result: "Neststandorte gesichert",
-    },
-    {
-      id: "s3",
-      art: "Fledermäuse",
-      status: "🟠",
-      law: "FFH",
-      need: "Baumhöhlen (Totholz)",
-      measure: "Totholz in lrt90 Wald",
-      coverage: "88/100% 🟢",
-      result: "Sommerquartiere verfügbar",
     },
   ];
   const landcoverEntries = [
@@ -472,6 +405,20 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
     setSelectedSpeciesId(speciesId);
   };
 
+  const getBaseSpeciesName = (name: string) => {
+    const parts = name.split(" ");
+    return parts.length > 1 ? parts.slice(1).join(" ") : name;
+  };
+  const detailSpeciesName = detailRow ? getBaseSpeciesName(detailRow.name) : null;
+  const detailSpecies = detailSpeciesName
+    ? results.species.find(
+        (species) =>
+          species.name === detailSpeciesName ||
+          species.name.includes(detailSpeciesName) ||
+          detailSpeciesName.includes(species.name)
+      )
+    : undefined;
+  const detailSpeciesId = detailSpecies?.id ?? null;
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -523,7 +470,7 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
               </div>
               <div className="mt-2 text-base text-foreground">{locationLabel}</div>
             </div>
-            <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-5">
+            <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-lg border border-border/40 bg-background px-3 py-2">
                 <div className="flex items-center gap-2 text-foreground font-medium">
                   <Ruler className="w-4 h-4 text-primary" />
@@ -552,16 +499,8 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
                 </div>
                 <div className="mt-1 text-foreground">{results.analysis.id}</div>
               </div>
-              <div className="rounded-lg border border-border/40 bg-background px-3 py-2">
-                <div className="flex items-center gap-2 text-foreground font-medium">
-                  <Leaf className="w-4 h-4 text-primary" />
-                  Ökopunkte
-                </div>
-                <div className="mt-1 text-foreground">
-                  {formatPoints(compensationNeedPoints)}
-                </div>
-              </div>
             </div>
+            <div className="mt-4 flex flex-col gap-3 text-sm sm:flex-row" />
           </div>
         </motion.section>
 
@@ -603,59 +542,311 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
           transition={{ duration: 0.5, delay: 0.15 }}
         >
           <h2 className="text-xl font-semibold text-foreground mb-4">
-            Kompensationsübersicht
+            Multifunktionale Kompensationsmaßnahmen
           </h2>
           <Card className="card-elevated overflow-hidden">
             <div className="p-4">
-              <div className="rounded-xl border border-border/40 bg-background/70 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex flex-wrap items-center gap-4">
-                    <span
-                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${severityTone.badge}`}
-                    >
-                      <span className={`h-2.5 w-2.5 rounded-full ${severityTone.dot}`} />
-                      {impactSeverity.abbr} - {impactSeverity.label}
-                    </span>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-foreground">
-                          Kompensation notwendig
-                        </span>
+              <Dialog open={Boolean(detailRow)} onOpenChange={(open) => !open && setDetailRow(null)}>
+                <DialogContent className="max-w-5xl p-0 overflow-hidden">
+                  <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50 bg-muted/20">
+                    <DialogTitle className="text-lg text-foreground">
+                      {detailSpeciesName ?? "Details"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="max-h-[80vh] overflow-y-auto">
+                    <div className="p-6 space-y-6">
+                      <div className="rounded-xl border border-border/50 overflow-hidden">
+                        <ResultsMap results={results} selectedSpeciesId={detailSpeciesId} />
                       </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-semibold text-foreground">
-                      {formatPoints(compensationNeedPoints)}
+                      <div className="rounded-lg border border-border/50 bg-background/70 p-4">
+                        <div className="text-sm font-semibold text-foreground">Kompensationsmaßnahmen</div>
+                        {detailSpeciesName === "Rebhuhn" ? (
+                          <div className="mt-3 space-y-4 text-sm text-muted-foreground">
+                            <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+                              <div className="text-sm font-semibold text-foreground">
+                                Rebhuhn - Habitatoptimierungen
+                              </div>
+                              <div className="mt-1 text-xs">
+                                Strukturierter Ueberblick fuer Acker- und Gruenlandmassnahmen.
+                              </div>
+                            </div>
+
+                            <div className="rounded-lg border border-border/50 bg-background p-3">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="text-xs font-semibold text-foreground">
+                                  O2.1/O2.2 Habitatoptimierungen im Acker
+                                </div>
+                                <span className="rounded-full bg-status-red-bg px-2 py-0.5 text-[10px] font-semibold text-status-red">
+                                  Prioritaet 1
+                                </span>
+                              </div>
+                              <div className="mt-1 text-xs">
+                                Orientierungswert: 1 ha pro Paar (flaechige Massnahmen bevorzugt)
+                              </div>
+                              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                                <div>
+                                  <div className="text-[11px] font-semibold text-foreground">Massnahmen</div>
+                                  <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                    <li>Nutzungsextensivierung Intensivaecker + Ackerbrachen (Goettinger Modell)</li>
+                                    <li>Mindestbreite Streifen: 15-20 m</li>
+                                    <li>Keine Duengemittel, Biozide oder Beikrautregulierung</li>
+                                    <li>Bei fehlenden offenen Boeden mit Schwarzbrachestreifen kombinieren</li>
+                                    <li>Rotation: jaehrlich 1/2 Flaeche neu oder alle 3-5 Jahre komplett</li>
+                                  </ul>
+                                </div>
+                                <div>
+                                  <div className="text-[11px] font-semibold text-foreground">Standortanforderungen</div>
+                                  <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                    <li>&gt;120 m Abstand zu Waldrand, Siedlung und stark frequentierten Wegen</li>
+                                    <li>Trockene Boeden priorisieren</li>
+                                    <li>Keine Gruenlandumwandlung, ackergepraegte Gebiete bevorzugen</li>
+                                    <li>Verteilte Streifen statt isolierter Inseln</li>
+                                  </ul>
+                                </div>
+                              </div>
+                              <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+                                <span className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5">
+                                  Wirksamkeit: nach 2 Jahren
+                                </span>
+                                <span className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5">
+                                  Eignung: hoch
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="rounded-lg border border-border/50 bg-background p-3">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="text-xs font-semibold text-foreground">
+                                  O1.1 Habitatoptimierungen im Gruenland
+                                </div>
+                                <span className="rounded-full bg-status-yellow/20 px-2 py-0.5 text-[10px] font-semibold text-status-yellow">
+                                  Prioritaet 2
+                                </span>
+                              </div>
+                              <div className="mt-1 text-xs">Orientierungswert: 1 ha pro Paar</div>
+                              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                                <div>
+                                  <div className="text-[11px] font-semibold text-foreground">Massnahmen</div>
+                                  <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                    <li>Extensivmahd oder Beweidung (max. 2 Rinder/ha bis Mitte August)</li>
+                                    <li>Keine Mahd waehrend der Brutzeit (April bis Mitte August)</li>
+                                    <li>Kraeuteranteil erhoehen (autochthones Saatgut, nicht dichtwuechsig)</li>
+                                    <li>Keine Pestizide und kein Duenger</li>
+                                  </ul>
+                                </div>
+                                <div>
+                                  <div className="text-[11px] font-semibold text-foreground">Standortanforderungen</div>
+                                  <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                    <li>&gt;120 m zu Wald, Wegen und Siedlungen; trockene Standorte bevorzugen</li>
+                                    <li>Keine wuechsigen Flaechen (ggf. vorher ausmagern)</li>
+                                    <li>Gruenlandgebiete priorisieren, kein Umbruch</li>
+                                    <li>Mosaik aus kurz- und langrasigen Strukturen</li>
+                                  </ul>
+                                </div>
+                              </div>
+                              <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+                                <span className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5">
+                                  Wirksamkeit: 2 Jahre (Optimierung), 5 Jahre (Neuanlage)
+                                </span>
+                                <span className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5">
+                                  Eignung: hoch
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="rounded-lg border border-border/50 bg-background p-3">
+                              <div className="text-[11px] font-semibold text-foreground">Allgemeine Hinweise</div>
+                              <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                <li>Monitoring: massnahmen- und populationsbezogen erforderlich</li>
+                                <li>Pflege: jaehrliche Rotation und Brutzeitschonung</li>
+                                <li>Kombination: Acker + Gruenland als Mosaik ist optimal</li>
+                                <li>Risiko: niedrige Populationsdichte kann Besiedlung verzoegern</li>
+                              </ul>
+                            </div>
+                          </div>
+                        ) : detailSpeciesName === "Rotmilan" ? (
+                          <div className="mt-3 space-y-4 text-sm text-muted-foreground">
+                            <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+                              <div className="text-sm font-semibold text-foreground">
+                                Rotmilan - Habitatoptimierungen
+                              </div>
+                              <div className="mt-1 text-xs">
+                                Strukturierter Ueberblick zu Brutplatz, Nahrung und Biotopverbund.
+                              </div>
+                            </div>
+
+                            <div className="rounded-lg border border-border/50 bg-background p-3">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="text-xs font-semibold text-foreground">
+                                  W1.1 Brutplatz + O1.1 Nahrung
+                                </div>
+                                <span className="rounded-full bg-status-red-bg px-2 py-0.5 text-[10px] font-semibold text-status-red">
+                                  Prioritaet 1
+                                </span>
+                              </div>
+                              <div className="mt-2 text-[11px] font-semibold text-foreground">W1.1 Brutplatz</div>
+                              <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                <li>1 ha Einzelbaeume/Waldrand schuetzen</li>
+                                <li>max. 200 m zum Wald</li>
+                              </ul>
+                              <div className="mt-3 text-[11px] font-semibold text-foreground">O1.1 Nahrung</div>
+                              <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                <li>5 ha Extensivgruenland pro Paar</li>
+                                <li>Gruenland priorisieren! (Expertenworkshop)</li>
+                                <li>max. 1 km zum Horst</li>
+                              </ul>
+                            </div>
+
+                            <div className="rounded-lg border border-border/50 bg-background p-3">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="text-xs font-semibold text-foreground">B1.1 Biotopverbund</div>
+                                <span className="rounded-full bg-status-yellow/20 px-2 py-0.5 text-[10px] font-semibold text-status-yellow">
+                                  Prioritaet 2
+                                </span>
+                              </div>
+                              <ul className="mt-2 list-disc space-y-1 pl-4 text-xs">
+                                <li>3 ha Waldrand-Saeume/Brachen an Acker in Waldnaehe</li>
+                                <li>Randstreifen (3-10 m): Wildkraeuter, keine Duengung/Pestizide</li>
+                                <li>Prognose: Wert 2-&gt;5 (LANUK), unterstuetzt Nahrung/Jagdhabitat</li>
+                              </ul>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="mt-2 text-sm text-muted-foreground">
+                            Keine spezifischen Maßnahmen hinterlegt.
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-4 rounded-lg border border-border/50 bg-background/70 p-4">
+                        <div className="text-sm font-semibold text-foreground">Quellen</div>
+                        {detailSpeciesName === "Rotmilan" ? (
+                          <div className="mt-2 grid gap-1 text-sm">
+                            <a
+                              className="text-xs text-primary underline"
+                              href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Arten-Information
+                            </a>
+                            <a
+                              className="text-xs text-primary underline"
+                              href="https://www.lanuk.nrw.de/publikationen/publikation/numerische-bewertung-von-biotoptypen-fuer-die-eingriffsregelung-in-nrw"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Biotop-Bewertung
+                            </a>
+                          </div>
+                        ) : detailSpeciesName === "Rebhuhn" ? (
+                          <div className="mt-2 grid gap-1 text-sm">
+                            <a
+                              className="text-xs text-primary underline"
+                              href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Arten-Information
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="mt-2 text-sm text-muted-foreground">Keine Quellen hinterlegt.</div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">Oekopunkte</div>
                   </div>
-                </div>
-              </div>
+                </DialogContent>
+              </Dialog>
               <div className="rounded-xl border border-border/40 bg-background/70 p-4">
                 <Collapsible open={isCompTableOpen} onOpenChange={setIsCompTableOpen}>
                   <div className="flex items-center justify-between gap-3 px-2 pb-3">
-                    <div className="text-sm font-semibold text-foreground">
-                      Artenbezogene Kompensationsliste
-                    </div>
-                    <CollapsibleTrigger asChild>
-                      <Button variant="ghost" size="sm" className="gap-2">
-                        {isCompTableOpen ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
-                        {isCompTableOpen ? "Ausblenden" : "Einblenden"}
-                      </Button>
-                    </CollapsibleTrigger>
+                    <span className="font-semibold text-foreground">
+                      Multifunktionale Kompensationsmaßnahmen
+                    </span>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Download className="w-4 h-4" />
+                      CSV Export
+                    </Button>
                   </div>
-                  <CollapsibleContent>
-                    <div className="overflow-x-auto hidden">
+                  {!isCompTableOpen ? (
+                    <div className="overflow-x-auto">
                       <UITable className="min-w-[980px]">
+                        <TableHeader>
+                          <TableRow className="bg-muted/30 text-xs">
+                            <TableHead>Art</TableHead>
+                            <TableHead>Habitat</TableHead>
+                            <TableHead>Flächenanteil</TableHead>
+                            <TableHead></TableHead>
+                            <TableHead>Details</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {compensationTableRows.slice(0, 2).map((row) => (
+                            <TableRow key={row.id} className="text-xs">
+                              <TableCell>
+                                <div className="font-medium text-foreground">{row.name}</div>
+                                <div className="text-[11px] text-muted-foreground">
+                                  {row.scientificName}
+                                </div>
+                                <div className="text-[11px] text-muted-foreground">
+                                  {row.legalLabel}
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-muted-foreground">
+                                {row.habitatDetail}
+                              </TableCell>
+                              <TableCell>
+                                <span className="rounded-full border border-border/50 bg-muted/40 px-2 py-0.5 text-[11px] text-muted-foreground">
+                                  {row.shareLabel}
+                                </span>
+                              </TableCell>
+                              <TableCell />
+                              <TableCell>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-7 px-3 text-[11px]"
+                                  onClick={() => setDetailRow(row)}
+                                >
+                                  Details
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          {compensationTableRows.length === 0 && (
+                            <TableRow className="text-xs">
+                              <TableCell className="text-muted-foreground" colSpan={5}>
+                                Keine priorisierten Arten im Datensatz.
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </UITable>
+                      {compensationTableRows.length > 2 && (
+                        <div className="mt-3 flex justify-center">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => setIsCompTableOpen(true)}
+                            aria-label="Mehr anzeigen"
+                          >
+                            <ChevronDown className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <CollapsibleContent>
+                      <div className="overflow-x-auto">
+                        <UITable className="min-w-[980px]">
                           <TableHeader>
                             <TableRow className="bg-muted/30 text-xs">
                               <TableHead>Art</TableHead>
                               <TableHead>Habitat</TableHead>
                               <TableHead>Flächenanteil</TableHead>
-                              <TableHead>Evidenz</TableHead>
+                              <TableHead></TableHead>
+                              <TableHead>Details</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -678,164 +869,42 @@ const ResultsDashboard = ({ results, onReset }: ResultsDashboardProps) => {
                                     {row.shareLabel}
                                   </span>
                                 </TableCell>
+                                <TableCell />
                                 <TableCell>
-                                  <span
-                                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${getEignungBadgeClass(
-                                      Math.max(75, row.score)
-                                    )}`}
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 px-3 text-[11px]"
+                                    onClick={() => setDetailRow(row)}
                                   >
-                                    {Math.max(75, row.score)}
-                                  </span>
+                                    Details
+                                  </Button>
                                 </TableCell>
                               </TableRow>
                             ))}
                             {compensationTableRows.length === 0 && (
                               <TableRow className="text-xs">
-                                <TableCell className="text-muted-foreground" colSpan={4}>
+                                <TableCell className="text-muted-foreground" colSpan={5}>
                                   Keine priorisierten Arten im Datensatz.
                                 </TableCell>
                               </TableRow>
                             )}
                           </TableBody>
-                      </UITable>
-                    </div>
-                    <div className="space-y-6">
-                      <div>
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                          Biotopbilanz
-                        </div>
-                        <div className="mt-3 overflow-x-auto">
-                          <UITable className="min-w-[820px]">
-                            <TableHeader>
-                              <TableRow className="bg-muted/30 text-xs">
-                                <TableHead>Eingriff</TableHead>
-                                <TableHead>Fläche</TableHead>
-                                <TableHead>BT-Code</TableHead>
-                                <TableHead>BT-Wert</TableHead>
-                                <TableHead>ÖP verloren</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {biotopBalanceRows.map((row) => (
-                                <TableRow key={row.id} className="text-xs">
-                                  <TableCell className="font-medium text-foreground">
-                                    {row.impact}
-                                  </TableCell>
-                                  <TableCell className="text-muted-foreground">
-                                    {row.area}
-                                  </TableCell>
-                                  <TableCell className="text-muted-foreground">
-                                    {row.code}
-                                  </TableCell>
-                                  <TableCell className="text-muted-foreground">
-                                    {row.value}
-                                  </TableCell>
-                                  <TableCell className="font-semibold text-foreground">
-                                    {row.points}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                              <TableRow className="bg-muted/20 text-xs">
-                                <TableCell className="font-semibold text-foreground">
-                                  ∑ Eingriff
-                                </TableCell>
-                                <TableCell className="text-muted-foreground">
-                                  {biotopBalanceTotal.area}
-                                </TableCell>
-                                <TableCell />
-                                <TableCell />
-                                <TableCell className="font-semibold text-foreground">
-                                  {biotopBalanceTotal.points}
-                                </TableCell>
-                              </TableRow>
-                            </TableBody>
-                          </UITable>
-                        </div>
+                        </UITable>
                       </div>
-
-                      <div className="rounded-xl border border-border/50 bg-background/80 p-4">
-                        <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-                          <div className="font-semibold text-foreground">
-                            Benötigtes Flächen-Upgrade
-                          </div>
-                          <div className="text-muted-foreground">
-                            SCHLECHT → GUT = ÖP-GEWINN
-                          </div>
-                        </div>
-                        <div className="mt-4 space-y-4 text-xs">
-                          {biotopUpgradeRows.map((row) => (
-                            <div key={row.id} className="grid gap-3 md:grid-cols-3">
-                              <div className="rounded-lg border border-border/50 bg-muted/10 p-3">
-                                <div className="text-muted-foreground">{row.fromArea}</div>
-                                <div className="font-semibold text-foreground">{row.fromCode}</div>
-                                <div className="mt-2 text-muted-foreground">
-                                  {row.fromPoints}
-                                </div>
-                              </div>
-                              <div className="rounded-lg border border-border/50 bg-muted/10 p-3">
-                                <div className="text-muted-foreground">{row.toArea}</div>
-                                <div className="font-semibold text-foreground">{row.toCode}</div>
-                                <div className="mt-2 text-muted-foreground">{row.toPoints}</div>
-                              </div>
-                              <div className="rounded-lg border border-border/50 bg-emerald-500/10 p-3">
-                                <div className="text-muted-foreground">{row.delta}</div>
-                                <div className="font-semibold text-emerald-400">{row.gain} 🟢</div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="mt-4 text-sm font-semibold text-foreground">
-                          {biotopUpgradeSummary}
-                        </div>
-                        <div className="mt-1 text-xs text-muted-foreground">
-                          {biotopUpgradeFormula}
-                        </div>
+                      <div className="mt-3 flex justify-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => setIsCompTableOpen(false)}
+                          aria-label="Weniger anzeigen"
+                        >
+                          <ChevronUp className="w-4 h-4" />
+                        </Button>
                       </div>
-
-                      <div>
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                          Artdeckung
-                        </div>
-                        <div className="mt-3 overflow-x-auto">
-                          <UITable className="min-w-[900px]">
-                            <TableHeader>
-                              <TableRow className="bg-muted/30 text-xs">
-                                <TableHead>Art</TableHead>
-                                <TableHead>🔴 Bedarf</TableHead>
-                                <TableHead>✅ Maßnahme</TableHead>
-                                <TableHead>📊 Deckung</TableHead>
-                                <TableHead>🎯 Ergebnis</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {speciesCoverageRows.map((row) => (
-                                <TableRow key={row.id} className="text-xs">
-                                  <TableCell className="font-semibold text-foreground">
-                                    {row.status} {row.art} {row.law}
-                                  </TableCell>
-                                  <TableCell className="text-muted-foreground">
-                                    {row.need}
-                                  </TableCell>
-                                  <TableCell className="text-muted-foreground">
-                                    {row.measure}
-                                  </TableCell>
-                                  <TableCell className="text-emerald-400">
-                                    {row.coverage}
-                                  </TableCell>
-                                  <TableCell className="text-muted-foreground">
-                                    {row.result}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </UITable>
-                        </div>
-                        <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400">
-                          ✓ ALLE prüfrelevanten Arten abgedeckt
-                        </div>
-                      </div>
-                    </div>
-                  </CollapsibleContent>
+                    </CollapsibleContent>
+                  )}
                 </Collapsible>
               </div>
             </div>

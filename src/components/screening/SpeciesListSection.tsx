@@ -186,13 +186,6 @@ const SpeciesListSection = ({
             </div>
           </div>
         </TableCell>
-        <TableCell className="py-2">
-          <div className={cellClamp}>
-            <span className={`text-lg font-bold ${getScoreColor(displayScore)}`}>
-              {displayScore}
-            </span>
-          </div>
-        </TableCell>
         <TableCell className="py-2 text-center">
           <div className={cellClamp}>
             <span
@@ -436,6 +429,27 @@ const SpeciesListSection = ({
                                                 </div>
                                               </a>
                                             )}
+                                            {s.name === "Rebhuhn" && (
+                                              <a
+                                                href="https://www.gbif.org/species/2473958"
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="group rounded-lg border border-primary/35 bg-primary/10 p-3 text-left text-primary transition hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/15"
+                                                onClick={(event) => event.stopPropagation()}
+                                              >
+                                                <div className="flex items-center justify-between">
+                                                  <span className="text-sm font-semibold text-foreground">
+                                                    GBIF Artenseite
+                                                  </span>
+                                                </div>
+                                                <div className="mt-1 text-xs text-muted-foreground">
+                                                  Globale Arteninformationen und Vorkommen
+                                                </div>
+                                                <div className="mt-2 text-[11px] text-primary/80 truncate">
+                                                  gbif.org/species/2473958
+                                                </div>
+                                              </a>
+                                            )}
                                             <a
                                               href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/rasterkarten/103013"
                                               target="_blank"
@@ -630,7 +644,6 @@ const SpeciesListSection = ({
                     <TableRow className="bg-muted/30 text-xs">
                       <TableHead className="w-[44px]"></TableHead>
                       <TableHead>Art</TableHead>
-                      <TableHead>Score</TableHead>
                       <TableHead className="text-center">Prüfung</TableHead>
                       <TableHead className="text-center">Status</TableHead>
                       <TableHead className="text-center">Konfidenz</TableHead>

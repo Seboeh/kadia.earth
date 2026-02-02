@@ -547,16 +547,101 @@ const ResultsMap = ({ results, selectedSpeciesId }: ResultsMapProps) => {
           weight: 0,
         }).addTo(map);
 
-        rect.bindPopup(`
-          <div class="p-2">
-            <div class="font-semibold">Artenkonzentration</div>
-            <div class="text-lg font-bold">${probability}%</div>
-            <div class="text-xs text-gray-500">${cell.species}</div>
-            <div class="mt-2 text-[11px] text-gray-500">
-              SDM-Wert: ${cell.sdmValue.toFixed(2)}
+        const isRebhuhn = cell.species === "Rebhuhn";
+        const isRotmilan = cell.species === "Rotmilan";
+        const shouldShowCompensation = (isRebhuhn || isRotmilan) && probability >= 85;
+
+        rect.bindPopup(
+          `
+          <div class="p-3 w-96">
+            <div class="text-sm font-semibold text-gray-900">${cell.species}</div>
+            ${
+              shouldShowCompensation
+                ? `
+                  <div class="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2">
+                    <div class="text-xs font-semibold text-emerald-900">Kompensationsmassnahmen</div>
+                    ${
+                      isRebhuhn
+                        ? `
+                          <div class="mt-2 text-[11px] font-semibold text-emerald-900">O2.1 (Acker)</div>
+                          <ul class="mt-1 text-xs text-emerald-900 space-y-0.5 list-disc pl-4">
+                            <li>1 ha Extensivaecker pro Paar (Nutzungsextensivierung)</li>
+                            <li>&gt;120 m zum Waldrand (Praedationsschutz!)</li>
+                            <li>Goettinger Modell: 0,5 ha einjaehrig + 0,5 ha zweijaehrig</li>
+                          </ul>
+                          <div class="mt-2 text-[11px] font-semibold text-emerald-900">O2.2 (Brache)</div>
+                          <ul class="mt-1 text-xs text-emerald-900 space-y-0.5 list-disc pl-4">
+                            <li>Ackerbrachen anlegen</li>
+                            <li>Mind. 15-20 m breit (wg. Fuechse/Marder!)</li>
+                            <li>Nicht entlang Feldwege</li>
+                          </ul>
+                          <div class="mt-2 text-[11px] font-semibold text-emerald-900">O1.1 (Gruenland)</div>
+                          <ul class="mt-1 text-xs text-emerald-900 space-y-0.5 list-disc pl-4">
+                            <li>1 ha Extensivgruenland pro Paar</li>
+                            <li>Mahdverzicht April-Mitte August</li>
+                            <li>Kraeuterreich (Insekten foerdern)</li>
+                          </ul>
+                        `
+                        : `
+                          <div class="mt-2 text-[11px] font-semibold text-emerald-900">W1.1 (Brutplatz)</div>
+                          <ul class="mt-1 text-xs text-emerald-900 space-y-0.5 list-disc pl-4">
+                            <li>1 ha Einzelbaeume/Waldrand schuetzen</li>
+                            <li>max. 200 m zum Wald</li>
+                          </ul>
+                          <div class="mt-2 text-[11px] font-semibold text-emerald-900">O1.1 (Nahrung)</div>
+                          <ul class="mt-1 text-xs text-emerald-900 space-y-0.5 list-disc pl-4">
+                            <li>5 ha Extensivgruenland pro Paar</li>
+                            <li>Gruenland priorisieren! (Expertenworkshop)</li>
+                            <li>max. 1 km zum Horst</li>
+                          </ul>
+                          <div class="mt-2 text-[11px] font-semibold text-emerald-900">B1.1 (Biotopverbund)</div>
+                          <ul class="mt-1 text-xs text-emerald-900 space-y-0.5 list-disc pl-4">
+                            <li>3 ha Waldrand-Saeume/Brachen an Acker in Waldnaehe</li>
+                            <li>Randstreifen (3-10 m): Wildkraeuter, keine Duengung/Pestizide</li>
+                            <li>Prognose: Wert 2-&gt;5 (LANUK), unterstuetzt Nahrung/Jagdhabitat</li>
+                          </ul>
+                        `
+                    }
+                  </div>
+                `
+                : ""
+            }
+            <div class="mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+              <div class="text-xs font-medium text-gray-600">Vorkommenswahrscheinlichkeit</div>
+              <div class="text-base font-semibold text-gray-900">${probability}%</div>
+              <div class="text-[11px] text-gray-500">SDM-Wert: ${cell.sdmValue.toFixed(2)}</div>
             </div>
+            ${
+              isRotmilan
+                ? `
+                  <div class="mt-2 rounded-lg border border-gray-200 bg-white px-3 py-2">
+                    <div class="text-[11px] font-semibold text-gray-700">Quellen</div>
+                    <div class="mt-1 grid gap-1">
+                      <a class="text-xs text-blue-600 underline block break-words" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information</a>
+                      <a class="text-xs text-blue-600 underline block break-words" href="https://www.lanuk.nrw.de/publikationen/publikation/numerische-bewertung-von-biotoptypen-fuer-die-eingriffsregelung-in-nrw" target="_blank" rel="noreferrer">Biotop-Bewertung</a>
+                    </div>
+                  </div>
+                `
+                : isRebhuhn
+                  ? `
+                    <div class="mt-2 rounded-lg border border-gray-200 bg-white px-3 py-2">
+                      <div class="text-[11px] font-semibold text-gray-700">Quellen</div>
+                      <div class="mt-1 grid gap-1">
+                        <a class="text-xs text-blue-600 underline block break-words" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information</a>
+                      </div>
+                    </div>
+                  `
+                  : ""
+            }
           </div>
-        `);
+        `,
+          {
+            maxWidth: 420,
+            minWidth: 380,
+            autoPan: true,
+            autoPanPadding: [24, 24],
+          }
+        );
         rect.on("click", () => rect.openPopup());
 
         layersRef.current.heatmapRects.push(rect);
