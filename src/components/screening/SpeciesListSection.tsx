@@ -59,7 +59,7 @@ const getCompStatusBadgeClass = (status?: string) => {
   if (!status) return "bg-muted/40 text-muted-foreground";
   if (status === "saP-relevant") return "status-red";
   if (status === "Pruefrelevant") return "status-orange";
-  if (status === "Lokale Massnahmen") return "status-yellow";
+  if (status === "Lokale Ma?nahmen") return "status-yellow";
   if (status === "Nicht pruefrelevant") return "status-green";
   return "status-yellow";
 };
@@ -69,10 +69,10 @@ const compensationStatusByName: Record<string, string> = {
   Rotmilan: "Pruefrelevant",
   "Flederm??use": "Pruefrelevant",
   "Fledermaeuse (alle Arten)": "Pruefrelevant",
-  Feldlerche: "Lokale Massnahmen",
-  Grasfrosch: "Lokale Massnahmen",
-  Mauersegler: "Lokale Massnahmen",
-  Wachtel: "Lokale Massnahmen",
+  Feldlerche: "Lokale Ma?nahmen",
+  Grasfrosch: "Lokale Ma?nahmen",
+  Mauersegler: "Lokale Ma?nahmen",
+  Wachtel: "Lokale Ma?nahmen",
   Hornisse: "Nicht pruefrelevant",
   Waldameise: "Nicht pruefrelevant",
   "Rote Waldameise": "Nicht pruefrelevant",
@@ -93,11 +93,11 @@ const getScoreNarrative = (score: number) => {
   return {
     band,
     inputModel:
-      "Es liegen mehrere aktuelle und räumlich zuordenbare Nachweise vor, und die einbezogenen Umwelt- und Habitatprädiktoren zeigen ein zur Artökologie konsistentes Muster; die Modellierung stützt sich dabei auf fachlich etablierte Habitatpräferenzen, die im Betrachtungsraum als plausibel übertragbar angenommen werden.",
+      "Mehrere aktuelle, raeumlich zuordenbare Nachweise und passende Umwelt- bzw. Habitatpraediktoren aus der Habitatpotenzialanalyse sprechen fuer eine plausible Uebertragbarkeit der Modellierung.",
     quality:
-      "Das SDM/MSDM leitet daraus eine robuste Habitateignung mit einem klar ausgeprägten räumlichen Signal ab, was sich in einem Evidenz-Score im oberen Bereich widerspiegelt.",
+      "Das SDM/MSDM zeigt eine robuste Habitateignung mit klarem raeumlichem Signal und entsprechend hohem Evidenz-Score.",
     uncertainty:
-      "Verbleibende Unsicherheiten werden transparent ausgewiesen und betreffen insbesondere zeitliche Dynamiken (Aktualität der Nachweise) sowie mögliche lokale Stör- und Nutzungsänderungen.",
+      "Unsicherheiten bleiben v. a. bei der Aktualitaet der Nachweise sowie bei lokalen Stoer- und Nutzungsaenderungen.",
   };
 };
 
@@ -243,77 +243,54 @@ const SpeciesListSection = ({
                                         <div className="mt-3 space-y-4 text-sm text-muted-foreground">
                                           <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
                                             <div className="text-sm font-semibold text-foreground">Rebhuhn - Habitatoptimierungen</div>
-                                            <div className="mt-1 text-xs">Strukturierter Ueberblick fuer Acker- und Gruenlandmassnahmen.</div>
-                                          </div>
-
-                                          <div className="rounded-lg border border-border/50 bg-background p-3">
-                                            <div className="flex items-center justify-between gap-2">
-                                              <div className="text-xs font-semibold text-foreground">O2.1/O2.2 Habitatoptimierungen im Acker</div>
-                                              <span className="rounded-full bg-status-red-bg px-2 py-0.5 text-[10px] font-semibold text-status-red">Prioritaet 1</span>
-                                            </div>
-                                            <div className="mt-1 text-xs">Orientierungswert: 1 ha pro Paar (flaechige Massnahmen bevorzugt)</div>
-                                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                                              <div>
-                                                <div className="text-[11px] font-semibold text-foreground">Massnahmen</div>
-                                                <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
-                                                  <li>Nutzungsextensivierung Intensivaecker + Ackerbrachen (Goettinger Modell)</li>
-                                                  <li>Mindestbreite Streifen: 15-20 m</li>
-                                                  <li>Keine Duengemittel, Biozide oder Beikrautregulierung</li>
-                                                  <li>Bei fehlenden offenen Boeden mit Schwarzbrachestreifen kombinieren</li>
-                                                  <li>Rotation: jaehrlich 1/2 Flaeche neu oder alle 3-5 Jahre komplett</li>
-                                                </ul>
-                                              </div>
-                                              <div>
-                                                <div className="text-[11px] font-semibold text-foreground">Standortanforderungen</div>
-                                                <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
-                                                  <li>&gt;120 m Abstand zu Waldrand, Siedlung und stark frequentierten Wegen</li>
-                                                  <li>Trockene Boeden priorisieren</li>
-                                                  <li>Keine Gruenlandumwandlung, ackergepraegte Gebiete bevorzugen</li>
-                                                  <li>Verteilte Streifen statt isolierter Inseln</li>
-                                                </ul>
-                                              </div>
+                                            <div className="mt-1 text-xs text-foreground">
+                                              Für das Rebhuhn (Perdix perdix) als lokale Kompensationsmaßnahme müssen Sie
+                                              Habitatoptimierungen im Acker oder Grünland umsetzen, um Brut-, Nahrungs- und
+                                              Deckungsflächen zu schaffen. Diese Maßnahmen gleichen Beeinträchtigungen aus
+                                              und sind nach LANUV-Leitfaden hoch geeignet.
                                             </div>
                                           </div>
 
                                           <div className="rounded-lg border border-border/50 bg-background p-3">
                                             <div className="flex items-center justify-between gap-2">
-                                              <div className="text-xs font-semibold text-foreground">O1.1 Habitatoptimierungen im Gruenland</div>
-                                              <span className="rounded-full bg-status-yellow/20 px-2 py-0.5 text-[10px] font-semibold text-status-yellow">Prioritaet 2</span>
+                                              <div className="text-xs font-semibold text-foreground">Maßnahmen im Acker</div>
                                             </div>
-                                            <div className="mt-1 text-xs">Orientierungswert: 1 ha pro Paar</div>
-                                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                                              <div>
-                                                <div className="text-[11px] font-semibold text-foreground">Massnahmen</div>
-                                                <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
-                                                  <li>Extensivmahd oder Beweidung (max. 2 Rinder/ha bis Mitte August)</li>
-                                                  <li>Keine Mahd waehrend der Brutzeit (April bis Mitte August)</li>
-                                                  <li>Kraeuteranteil erhoehen (autochthones Saatgut, nicht dichtwuechsig)</li>
-                                                  <li>Keine Pestizide und kein Duenger</li>
-                                                </ul>
-                                              </div>
-                                              <div>
-                                                <div className="text-[11px] font-semibold text-foreground">Standortanforderungen</div>
-                                                <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
-                                                  <li>&gt;120 m zu Wald, Wegen und Siedlungen; trockene Standorte bevorzugen</li>
-                                                  <li>Keine wuechsigen Flaechen (ggf. vorher ausmagern)</li>
-                                                  <li>Gruenlandgebiete priorisieren, kein Umbruch</li>
-                                                  <li>Mosaik aus kurz- und langrasigen Strukturen</li>
-                                                </ul>
-                                              </div>
+                                            <div className="mt-2 text-xs text-foreground">
+                                              Legen Sie mindestens 1 ha Brache- oder Blühstreifen pro Paar an (ideal nach
+                                              Göttinger Modell: 1 ha halb einjährig, halb zweijährig einsäen; Breite
+                                              min. 15-20 m).
                                             </div>
-                                            <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
-                                              <span className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5">Wirksamkeit: 2 Jahre (Optimierung), 5 Jahre (Neuanlage)</span>
-                                              <span className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5">Eignung: hoch</span>
-                                            </div>
+                                            <ul className="mt-3 list-disc space-y-1 pl-4 text-xs">
+                                              <li>Halten Sie Abstand &gt;120 m zu W?ldern, Wegen, Siedlungen</li>
+                                              <li>Vermeiden Sie Dünger, Pestizide und Mahd April bis Mitte August</li>
+                                              <li>Rotieren Sie Flächen jährlich im 500-m-Radius</li>
+                                              <li>Kombinieren Sie mit Schwarzbrache für offene Böden</li>
+                                              <li>Kleine Büsche an Ecken, keine großen Gehölze</li>
+                                            </ul>
                                           </div>
 
                                           <div className="rounded-lg border border-border/50 bg-background p-3">
-                                            <div className="text-[11px] font-semibold text-foreground">Allgemeine Hinweise</div>
+                                            <div className="flex items-center justify-between gap-2">
+                                              <div className="text-xs font-semibold text-foreground">Maßnahmen im Grünland</div>
+                                            </div>
+                                            <div className="mt-2 text-xs text-foreground">
+                                              Errichten Sie 1 ha extensives Grünland pro Paar: keine intensive Mahd/Beweidung
+                                              in der Brutzeit, Kräuteranteil erhöhen, max. 2 Rinder/ha nach August.
+                                            </div>
+                                            <ul className="mt-3 list-disc space-y-1 pl-4 text-xs">
+                                              <li>Gleiche Standortregeln wie im Acker</li>
+                                              <li>Mahd nur früh (bis Mai) oder spät (ab Mitte August), jährlich wiederholen</li>
+                                              <li>Trockene Standorte bevorzugen</li>
+                                            </ul>
+                                          </div>
+
+                                          <div className="rounded-lg border border-border/50 bg-background p-3">
+                                            <div className="text-[11px] font-semibold text-foreground">Wichtige Hinweise</div>
                                             <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
-                                              <li>Monitoring: massnahmen- und populationsbezogen erforderlich</li>
-                                              <li>Pflege: jaehrliche Rotation und Brutzeitschonung</li>
-                                              <li>Kombination: Acker + Gruenland als Mosaik ist optimal</li>
-                                              <li>Risiko: niedrige Populationsdichte kann Besiedlung verzoegern</li>
+                                              <li>Maßnahmen wirken nach ca. 2 Jahren</li>
+                                              <li>Monitoring (maßnahmen- und populationsbezogen) erforderlich</li>
+                                              <li>Flächige vor streifenförmigen Varianten priorisieren</li>
+                                              <li>Ideal als Mosaik aus Acker und Grünland</li>
                                             </ul>
                                           </div>
                                         </div>
@@ -321,7 +298,7 @@ const SpeciesListSection = ({
                                         <div className="mt-3 space-y-4 text-sm text-muted-foreground">
                                           <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
                                             <div className="text-sm font-semibold text-foreground">Rotmilan - Habitatoptimierungen</div>
-                                            <div className="mt-1 text-xs">Strukturierter Ueberblick zu Brutplatz, Nahrung und Biotopverbund.</div>
+                                            <div className="mt-1 text-xs">Strukturierter ?berblick zu Brutplatz, Nahrung und Biotopverbund.</div>
                                           </div>
 
                                           <div className="rounded-lg border border-border/50 bg-background p-3">
@@ -337,7 +314,7 @@ const SpeciesListSection = ({
                                             <div className="mt-3 text-[11px] font-semibold text-foreground">O1.1 Nahrung</div>
                                             <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
                                               <li>5 ha Extensivgruenland pro Paar</li>
-                                              <li>Gruenland priorisieren! (Expertenworkshop)</li>
+                                              <li>Gr?nland priorisieren! (Expertenworkshop)</li>
                                               <li>max. 1 km zum Horst</li>
                                             </ul>
                                           </div>
@@ -355,7 +332,7 @@ const SpeciesListSection = ({
                                           </div>
                                         </div>
                                       ) : (
-                                        <div className="mt-2 text-sm text-muted-foreground">Keine spezifischen Massnahmen hinterlegt.</div>
+                                        <div className="mt-2 text-sm text-muted-foreground">Keine spezifischen Ma?nahmen hinterlegt.</div>
                                       )}
                                     </div>
                                     <div className="rounded-lg border border-border/50 bg-background/70 p-4">
@@ -413,18 +390,24 @@ const SpeciesListSection = ({
                     <TabsContent value="evidence" className="space-y-4">
                       <div className="rounded-xl border border-border/50 bg-background/70 p-4">
                         <div className="text-sm font-semibold text-foreground">Quellen</div>
+                        <div className="mt-1 text-xs font-medium uppercase tracking-wide text-primary">LANUK</div>
                         {s.name === "Rotmilan" ? (
-                          <div className="mt-2 grid gap-1 text-sm">
-                            <a className="text-xs text-primary underline" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information</a>
-                            <a className="text-xs text-primary underline" href="https://www.lanuk.nrw.de/publikationen/publikation/numerische-bewertung-von-biotoptypen-fuer-die-eingriffsregelung-in-nrw" target="_blank" rel="noreferrer">Biotop-Bewertung</a>
+                          <div className="mt-3 grid gap-2 text-sm">
+                            <a className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information NRW</a>
+                            <a className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/rasterkarten/103024" target="_blank" rel="noreferrer">NRW Rasterkarte 103024</a>
+                            <div className="mt-1 text-xs font-medium uppercase tracking-wide text-primary">GBIF</div>
+                            <a className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md" href="https://www.gbif.org/species/5229168" target="_blank" rel="noreferrer">GBIF Artprofil 5229168</a>
                           </div>
                         ) : s.name === "Rebhuhn" ? (
-                          <div className="mt-2 grid gap-1 text-sm">
-                            <a className="text-xs text-primary underline" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information</a>
+                          <div className="mt-3 grid gap-2 text-sm">
+                            <a className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information NRW</a>
+                            <a className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/rasterkarten/103024" target="_blank" rel="noreferrer">NRW Rasterkarte 103024</a>
+                            <div className="mt-1 text-xs font-medium uppercase tracking-wide text-primary">GBIF</div>
+                            <a className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md" href="https://www.gbif.org/species/2473958" target="_blank" rel="noreferrer">GBIF Artprofil 2473958</a>
                           </div>
                         ) : s.evidenceSourceUrl ? (
-                          <div className="mt-2 grid gap-1 text-sm">
-                            <a className="text-xs text-primary underline" href={s.evidenceSourceUrl} target="_blank" rel="noreferrer">
+                          <div className="mt-3 grid gap-2 text-sm">
+                            <a className="rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-md" href={s.evidenceSourceUrl} target="_blank" rel="noreferrer">
                               {s.evidenceSourceLabel ?? "Datenquelle"}
                             </a>
                           </div>
@@ -440,19 +423,8 @@ const SpeciesListSection = ({
                             {displayScore} ({scoreNarrative.band})
                           </div>
                         </div>
-                        <div className="mt-3 grid gap-2 text-sm text-muted-foreground">
-                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
-                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Eingangsdaten & Modellannahmen</div>
-                            <div>{scoreNarrative.inputModel}</div>
-                          </div>
-                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
-                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Guetemasse</div>
-                            <div>{scoreNarrative.quality}</div>
-                          </div>
-                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
-                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Unsicherheit</div>
-                            <div>{scoreNarrative.uncertainty}</div>
-                          </div>
+                        <div className="mt-3 rounded-lg border border-border/40 bg-background/60 px-3 py-2 text-sm text-muted-foreground">
+                          {scoreNarrative.inputModel} {scoreNarrative.quality} {scoreNarrative.uncertainty}
                         </div>
                       </div>
 
