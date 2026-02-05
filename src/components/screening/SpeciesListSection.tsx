@@ -209,9 +209,9 @@ const SpeciesListSection = ({
             </span>
           </div>
         </TableCell>
-        <Dialog>
-          <TableCell className="py-2 text-center">
-            <div className={cellClamp}>
+        <TableCell className="py-2 text-center">
+          <div className={cellClamp}>
+            <Dialog>
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
@@ -223,27 +223,7 @@ const SpeciesListSection = ({
                   Info
                 </Button>
               </DialogTrigger>
-            </div>
-          </TableCell>
-          <TableCell className="py-2">
-            <div className={`flex items-center justify-center gap-1 ${cellClamp}`}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      onClick={(event) => event.stopPropagation()}
-                      disabled={isPreview}
-                    >
-                      <Info className="w-3.5 h-3.5" />
-                    </Button>
-                  </DialogTrigger>
-                </TooltipTrigger>
-                <TooltipContent>Info</TooltipContent>
-              </Tooltip>
-                              <DialogContent className="max-w-5xl p-0 overflow-hidden">
+              <DialogContent className="max-w-5xl p-0 overflow-hidden">
                                 <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50 bg-muted/20">
                                   <DialogTitle className="text-lg text-foreground">
                                     {s.name}
@@ -396,9 +376,133 @@ const SpeciesListSection = ({
                                   </div>
                                 </div>
                               </DialogContent>
+            </Dialog>
           </div>
         </TableCell>
-        </Dialog>
+        <TableCell className="py-2">
+          <div className={`flex items-center justify-center gap-1 ${cellClamp}`}>
+            <Dialog>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={(event) => event.stopPropagation()}
+                      disabled={isPreview}
+                    >
+                      <Info className="w-3.5 h-3.5" />
+                    </Button>
+                  </DialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Info</TooltipContent>
+              </Tooltip>
+              <DialogContent className="max-w-2xl p-0 overflow-hidden">
+                <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50 bg-muted/20">
+                  <DialogTitle className="text-lg text-foreground">{s.name} - Quellen</DialogTitle>
+                  <div className="text-sm text-muted-foreground italic">{s.scientificName}</div>
+                </DialogHeader>
+                <div className="px-6 py-5">
+                  <Tabs defaultValue="evidence" className="space-y-4">
+                    <TabsList className="grid w-full grid-cols-2 rounded-lg bg-muted/30 p-1">
+                      <TabsTrigger value="evidence">Artenhinweise & Evidenz</TabsTrigger>
+                      <TabsTrigger value="context">Habitatindikatoren & Umwelt-Praediktoren</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="evidence" className="space-y-4">
+                      <div className="rounded-xl border border-border/50 bg-background/70 p-4">
+                        <div className="text-sm font-semibold text-foreground">Quellen</div>
+                        {s.name === "Rotmilan" ? (
+                          <div className="mt-2 grid gap-1 text-sm">
+                            <a className="text-xs text-primary underline" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information</a>
+                            <a className="text-xs text-primary underline" href="https://www.lanuk.nrw.de/publikationen/publikation/numerische-bewertung-von-biotoptypen-fuer-die-eingriffsregelung-in-nrw" target="_blank" rel="noreferrer">Biotop-Bewertung</a>
+                          </div>
+                        ) : s.name === "Rebhuhn" ? (
+                          <div className="mt-2 grid gap-1 text-sm">
+                            <a className="text-xs text-primary underline" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information</a>
+                          </div>
+                        ) : s.evidenceSourceUrl ? (
+                          <div className="mt-2 grid gap-1 text-sm">
+                            <a className="text-xs text-primary underline" href={s.evidenceSourceUrl} target="_blank" rel="noreferrer">
+                              {s.evidenceSourceLabel ?? "Datenquelle"}
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="mt-2 text-sm text-muted-foreground">Keine Quellen hinterlegt.</div>
+                        )}
+                      </div>
+
+                      <div className="rounded-xl border border-border/50 bg-background/70 p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="text-sm font-semibold text-foreground">Scoring</div>
+                          <div className={`text-sm font-semibold ${getScoreColor(displayScore)}`}>
+                            {displayScore} ({scoreNarrative.band})
+                          </div>
+                        </div>
+                        <div className="mt-3 grid gap-2 text-sm text-muted-foreground">
+                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
+                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Eingangsdaten & Modellannahmen</div>
+                            <div>{scoreNarrative.inputModel}</div>
+                          </div>
+                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
+                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Guetemasse</div>
+                            <div>{scoreNarrative.quality}</div>
+                          </div>
+                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
+                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Unsicherheit</div>
+                            <div>{scoreNarrative.uncertainty}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-border/50 bg-background/70 p-4">
+                        <div className="text-sm font-semibold text-foreground">Hinweise</div>
+                        <div className="mt-2 grid gap-2 text-sm text-muted-foreground">
+                          {s.reasons.slice(0, 5).map((reason, i) => {
+                            const [label, ...rest] = reason.split(":");
+                            const hasLabel = rest.length > 0;
+                            const body = hasLabel ? rest.join(":").trim() : reason;
+                            return (
+                              <div key={i} className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
+                                {hasLabel && <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">{label}</div>}
+                                <div>{body}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="context" className="space-y-4">
+                      <div className="rounded-xl border border-border/50 bg-background/70 p-4">
+                        <div className="text-sm font-semibold text-foreground">Raeumliche Habitateignung (modellbasiert)</div>
+                        <div className="mt-2 grid gap-2 text-sm text-muted-foreground">
+                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
+                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Landnutzung / Habitattypen</div>
+                            <div>Offene und halboffene Nutzungen als Nahrungs- und Jagdhabitat, Wald fuer Brut- und Ruhebereiche.</div>
+                          </div>
+                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
+                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Landschaftsstruktur / Fragmentierung</div>
+                            <div>Groesse, Vernetzung und Strukturvielfalt beeinflussen die Habitateignung wesentlich.</div>
+                          </div>
+                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
+                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Distanz zu Infrastruktur</div>
+                            <div>Abstand zu Strassen und Siedlungen als Stoerungsproxy.</div>
+                          </div>
+                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
+                            <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">Topographie / Klima</div>
+                            <div>Relief, Hoehenlage und regionale Klimaparameter fliessen in die Eignung ein.</div>
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </TableCell>
       </TableRow>
     );
   };
