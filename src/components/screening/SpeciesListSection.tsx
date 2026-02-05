@@ -27,12 +27,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Species } from "@/data/dummyData";
+import { ScreeningResult, Species } from "@/data/dummyData";
+import ResultsMap from "./ResultsMap";
 
 interface SpeciesListSectionProps {
   species: Species[];
   onShowOnMap: (speciesId: string) => void;
   selectedSpeciesId: string | null;
+  areaShareBySpecies?: Record<string, string>;
+  results: ScreeningResult;
 }
 
 const getDisplayScore = (score: number) => Math.max(75, score);
@@ -54,25 +57,25 @@ const getConfidenceColor = (confidence: Species["confidence"]) => {
 
 const getCompStatusBadgeClass = (status?: string) => {
   if (!status) return "bg-muted/40 text-muted-foreground";
-  if (status === "saP-pflichtig") return "status-red";
-  if (status === "prüfrelevant") return "status-orange";
-  if (status === "beachten") return "status-yellow";
-  if (status === "sekundär") return "status-green";
+  if (status === "saP-relevant") return "status-red";
+  if (status === "Pruefrelevant") return "status-orange";
+  if (status === "Lokale Massnahmen") return "status-yellow";
+  if (status === "Nicht pruefrelevant") return "status-green";
   return "status-yellow";
 };
 
 const compensationStatusByName: Record<string, string> = {
-  Rebhuhn: "saP-pflichtig",
-  Rotmilan: "prüfrelevant",
-  "Fledermäuse": "prüfrelevant",
-  "Fledermaeuse (alle Arten)": "prüfrelevant",
-  Feldlerche: "beachten",
-  Grasfrosch: "beachten",
-  Mauersegler: "beachten",
-  Wachtel: "beachten",
-  Hornisse: "sekundär",
-  Waldameise: "sekundär",
-  "Rote Waldameise": "sekundär",
+  Rebhuhn: "saP-relevant",
+  Rotmilan: "Pruefrelevant",
+  "Flederm??use": "Pruefrelevant",
+  "Fledermaeuse (alle Arten)": "Pruefrelevant",
+  Feldlerche: "Lokale Massnahmen",
+  Grasfrosch: "Lokale Massnahmen",
+  Mauersegler: "Lokale Massnahmen",
+  Wachtel: "Lokale Massnahmen",
+  Hornisse: "Nicht pruefrelevant",
+  Waldameise: "Nicht pruefrelevant",
+  "Rote Waldameise": "Nicht pruefrelevant",
 };
 
 const getDataStatusColor = (status: Species["dataStatus"]) => {
@@ -102,6 +105,8 @@ const SpeciesListSection = ({
   species,
   onShowOnMap,
   selectedSpeciesId,
+  areaShareBySpecies = {},
+  results,
 }: SpeciesListSectionProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState<
@@ -153,11 +158,11 @@ const SpeciesListSection = ({
     ? filteredAndSortedSpecies
     : filteredAndSortedSpecies.slice(0, 4);
   const previewSpecies = !showAllRows ? filteredAndSortedSpecies[4] : undefined;
-
   const renderSpeciesRow = (s: Species, isPreview = false) => {
     const cellClamp = isPreview ? "max-h-6 overflow-hidden" : "";
     const displayScore = getDisplayScore(s.evidenceScore);
     const scoreNarrative = getScoreNarrative(displayScore);
+    const areaShareLabel = areaShareBySpecies[s.name] ?? "-";
     return (
       <TableRow
         key={s.id}
@@ -186,13 +191,6 @@ const SpeciesListSection = ({
             </div>
           </div>
         </TableCell>
-        <TableCell className="py-2">
-          <div className={cellClamp}>
-            <span className={`text-lg font-bold ${getScoreColor(displayScore)}`}>
-              {displayScore}
-            </span>
-          </div>
-        </TableCell>
         <TableCell className="py-2 text-center">
           <div className={cellClamp}>
             <span
@@ -206,21 +204,29 @@ const SpeciesListSection = ({
         </TableCell>
         <TableCell className="py-2 text-center">
           <div className={cellClamp}>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${getDataStatusColor(s.dataStatus)}`}>
-              {s.dataStatus} {s.year && `(${s.year})`}
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-muted/40 text-foreground">
+              {areaShareLabel}
             </span>
           </div>
         </TableCell>
-        <TableCell className="py-2 text-center">
-          <div className={cellClamp}>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${getConfidenceColor(s.confidence)}`}>
-              {s.confidence}
-            </span>
-          </div>
-        </TableCell>
-        <TableCell className="py-2">
-          <div className={`flex items-center justify-center gap-1 ${cellClamp}`}>
-            <Dialog>
+        <Dialog>
+          <TableCell className="py-2 text-center">
+            <div className={cellClamp}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-3 text-[11px]"
+                  onClick={(event) => event.stopPropagation()}
+                  disabled={isPreview}
+                >
+                  Info
+                </Button>
+              </DialogTrigger>
+            </div>
+          </TableCell>
+          <TableCell className="py-2">
+            <div className={`flex items-center justify-center gap-1 ${cellClamp}`}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <DialogTrigger asChild>
@@ -235,9 +241,9 @@ const SpeciesListSection = ({
                     </Button>
                   </DialogTrigger>
                 </TooltipTrigger>
-                <TooltipContent>Details</TooltipContent>
+                <TooltipContent>Info</TooltipContent>
               </Tooltip>
-                              <DialogContent className="max-w-2xl p-0 overflow-hidden">
+                              <DialogContent className="max-w-5xl p-0 overflow-hidden">
                                 <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50 bg-muted/20">
                                   <DialogTitle className="text-lg text-foreground">
                                     {s.name}
@@ -245,284 +251,100 @@ const SpeciesListSection = ({
                                   <div className="text-sm text-muted-foreground italic">
                                     {s.scientificName}
                                   </div>
-                                  <div className="mt-2">
-                                    <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary">
-                                      {s.legalLabels[0]}
-                                    </span>
-                                  </div>
                                 </DialogHeader>
-
-                                                                <div className="px-6 py-5 space-y-6">
-                                  <div>
-                                    <div className="text-base font-semibold text-foreground mb-3">
-                                      Übersicht
+                                <div className="max-h-[80vh] overflow-y-auto">
+                                  <div className="p-6 space-y-6">
+                                    <div className="rounded-xl border border-border/50 overflow-hidden">
+                                      <ResultsMap results={results} selectedSpeciesId={s.id} />
                                     </div>
-                                    <div className="grid grid-cols-3 gap-3 text-sm">
-                                      <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-3 text-center">
-                                        <div className="text-muted-foreground">Evidenz</div>
-                                        <div className={`text-lg font-semibold ${getScoreColor(displayScore)}`}>
-                                          {displayScore}
+                                    <div className="rounded-lg border border-border/50 bg-background/70 p-4">
+                                      <div className="text-sm font-semibold text-foreground">Kompensationsmassnahmen</div>
+                                      {s.name === "Rebhuhn" ? (
+                                        <div className="mt-3 space-y-4 text-sm text-muted-foreground">
+                                          <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+                                            <div className="text-sm font-semibold text-foreground">Rebhuhn - Habitatoptimierungen</div>
+                                            <div className="mt-1 text-xs">Strukturierter Ueberblick fuer Acker- und Gruenlandmassnahmen.</div>
+                                          </div>
+
+                                          <div className="rounded-lg border border-border/50 bg-background p-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                              <div className="text-xs font-semibold text-foreground">O2.1/O2.2 Habitatoptimierungen im Acker</div>
+                                              <span className="rounded-full bg-status-red-bg px-2 py-0.5 text-[10px] font-semibold text-status-red">Prioritaet 1</span>
+                                            </div>
+                                            <div className="mt-1 text-xs">Orientierungswert: 1 ha pro Paar (flaechige Massnahmen bevorzugt)</div>
+                                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                                              <div>
+                                                <div className="text-[11px] font-semibold text-foreground">Massnahmen</div>
+                                                <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                                  <li>Nutzungsextensivierung Intensivaecker + Ackerbrachen (Goettinger Modell)</li>
+                                                  <li>Mindestbreite Streifen: 15-20 m</li>
+                                                  <li>Keine Duengemittel, Biozide oder Beikrautregulierung</li>
+                                                  <li>Bei fehlenden offenen Boeden mit Schwarzbrachestreifen kombinieren</li>
+                                                  <li>Rotation: jaehrlich 1/2 Flaeche neu oder alle 3-5 Jahre komplett</li>
+                                                </ul>
+                                              </div>
+                                              <div>
+                                                <div className="text-[11px] font-semibold text-foreground">Standortanforderungen</div>
+                                                <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                                  <li>&gt;120 m Abstand zu Waldrand, Siedlung und stark frequentierten Wegen</li>
+                                                  <li>Trockene Boeden priorisieren</li>
+                                                  <li>Keine Gruenlandumwandlung, ackergepraegte Gebiete bevorzugen</li>
+                                                  <li>Verteilte Streifen statt isolierter Inseln</li>
+                                                </ul>
+                                              </div>
+                                            </div>
+                                          </div>
                                         </div>
-                                      </div>
-                                      <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-3 text-center">
-                                        <div className="text-muted-foreground">Status</div>
-                                        <div className="text-base font-semibold text-foreground">
-                                          <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${getDataStatusColor(s.dataStatus)}`}>
-                                            {s.dataStatus} {s.year && `(${s.year})`}
-                                          </span>
+                                      ) : s.name === "Rotmilan" ? (
+                                        <div className="mt-3 space-y-4 text-sm text-muted-foreground">
+                                          <div className="rounded-lg border border-border/50 bg-muted/20 p-3">
+                                            <div className="text-sm font-semibold text-foreground">Rotmilan - Habitatoptimierungen</div>
+                                            <div className="mt-1 text-xs">Strukturierter Ueberblick zu Brutplatz, Nahrung und Biotopverbund.</div>
+                                          </div>
+
+                                          <div className="rounded-lg border border-border/50 bg-background p-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                              <div className="text-xs font-semibold text-foreground">W1.1 Brutplatz + O1.1 Nahrung</div>
+                                              <span className="rounded-full bg-status-red-bg px-2 py-0.5 text-[10px] font-semibold text-status-red">Prioritaet 1</span>
+                                            </div>
+                                            <div className="mt-2 text-[11px] font-semibold text-foreground">W1.1 Brutplatz</div>
+                                            <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                              <li>1 ha Einzelbaeume/Waldrand schuetzen</li>
+                                              <li>max. 200 m zum Wald</li>
+                                            </ul>
+                                            <div className="mt-3 text-[11px] font-semibold text-foreground">O1.1 Nahrung</div>
+                                            <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                              <li>5 ha Extensivgruenland pro Paar</li>
+                                              <li>Gruenland priorisieren! (Expertenworkshop)</li>
+                                              <li>max. 1 km zum Horst</li>
+                                            </ul>
+                                          </div>
                                         </div>
-                                      </div>
-                                      <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-3 text-center">
-                                        <div className="text-muted-foreground">Konfidenz</div>
-                                        <div className="text-base font-semibold text-foreground">
-                                          <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${getConfidenceColor(s.confidence)}`}>
-                                            {s.confidence}
-                                          </span>
+                                      ) : (
+                                        <div className="mt-2 text-sm text-muted-foreground">Keine spezifischen Massnahmen hinterlegt.</div>
+                                      )}
+                                    </div>
+                                    <div className="rounded-lg border border-border/50 bg-background/70 p-4">
+                                      <div className="text-sm font-semibold text-foreground">Quellen</div>
+                                      {s.name === "Rotmilan" ? (
+                                        <div className="mt-2 grid gap-1 text-sm">
+                                          <a className="text-xs text-primary underline" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information</a>
+                                          <a className="text-xs text-primary underline" href="https://www.lanuk.nrw.de/publikationen/publikation/numerische-bewertung-von-biotoptypen-fuer-die-eingriffsregelung-in-nrw" target="_blank" rel="noreferrer">Biotop-Bewertung</a>
                                         </div>
-                                      </div>
+                                      ) : s.name === "Rebhuhn" ? (
+                                        <div className="mt-2 grid gap-1 text-sm">
+                                          <a className="text-xs text-primary underline" href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/massn/103024" target="_blank" rel="noreferrer">Arten-Information</a>
+                                        </div>
+                                      ) : (
+                                        <div className="mt-2 text-sm text-muted-foreground">Keine Quellen hinterlegt.</div>
+                                      )}
                                     </div>
                                   </div>
-                                  <Tabs defaultValue="evidence" className="space-y-4">
-                                    <TabsList className="grid w-full grid-cols-2 rounded-lg bg-muted/30 p-1">
-                                      <TabsTrigger value="evidence">Artenhinweise & Evidenz</TabsTrigger>
-                                      <TabsTrigger value="context">Habitatindikatoren & Umwelt-Prädiktoren</TabsTrigger>
-                                    </TabsList>
-                                    <TabsContent value="context" className="space-y-6">
-                                      <div>
-                                        <div className="text-base font-semibold text-foreground mb-3">
-                                          Räumliche Habitateignung (modellbasiert)
-                                        </div>
-                                        <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-                                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2 sm:col-span-2">
-                                            <div className="text-sm font-semibold text-foreground mb-2">
-                                              Landnutzung / Habitattypen
-                                            </div>
-                                            <div>
-                                              Offene und halboffene Nutzungen werden als Nahrungs- und Jagdhabitate
-                                              berücksichtigt (z. B. Grünland, niedrig bewachsene Ackerflächen). Wald
-                                              wird v. a. für Brut- und Ruhebereiche einbezogen.
-                                            </div>
-                                            <div className="mt-2 text-[11px] text-muted-foreground">
-                                              Offene Agrarlandschaften, Grünland, strukturreiche Feldflur
-                                            </div>
-                                          </div>
-                                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2 sm:col-span-2">
-                                            <div className="text-sm font-semibold text-foreground mb-2">
-                                              Landschaftsstruktur / Fragmentierung
-                                            </div>
-                                            <div>
-                                              Entscheidend sind Größe und Vernetzung offener Flächen sowie strukturgebende
-                                              Elemente (z. B. Gehölzsäume, Feldraine). Stark fragmentierte oder isolierte
-                                              Flächen mindern die Habitateignung.
-                                            </div>
-                                            <div className="mt-2 text-[11px] text-muted-foreground">
-                                              Flächengröße, Vernetzung, Strukturvielfalt
-                                            </div>
-                                          </div>
-                                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2 sm:col-span-2">
-                                            <div className="text-sm font-semibold text-foreground mb-2">
-                                              Distanz zu Infrastruktur (Störungsproxy)
-                                            </div>
-                                            <div>
-                                              Abstand zu Straßen, Siedlungen und stark frequentierten Wegen dient als
-                                              Störungsproxy. Je näher die Infrastruktur, desto geringer die
-                                              Habitateignung.
-                                            </div>
-                                            <div className="mt-2 text-[11px] text-muted-foreground">
-                                              Abstand zu Straßen und Siedlungen (Störungsnähe)
-                                            </div>
-                                          </div>
-                                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2 sm:col-span-2">
-                                            <div className="text-sm font-semibold text-foreground mb-2">
-                                              Topographie / Klima
-                                            </div>
-                                            <div>
-                                              Geländeneigung, Höhenlage und regionale Klimawerte erfassen
-                                              artspezifische Präferenzen für offene, übersichtliche Landschaften.
-                                            </div>
-                                            <div className="mt-2 text-[11px] text-muted-foreground">
-                                              Relief, Höhenlage, regionale Klimaparameter
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <div className="text-base font-semibold text-foreground mb-3">
-                                          Habitatindikatoren & Umwelt-Prädiktoren
-                                        </div>
-                                        <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-                                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
-                                            <div className="text-[11px] text-muted-foreground mb-1">Klima</div>
-                                            <div className="flex flex-wrap gap-1">
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                9.8?C Jahresmittel
-                                              </span>
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                640 mm/Jahr
-                                              </span>
-                                            </div>
-                                          </div>
-                                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
-                                            <div className="text-[11px] text-muted-foreground mb-1">Topografie</div>
-                                            <div className="flex flex-wrap gap-1">
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                148 m
-                                              </span>
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                6.2?
-                                              </span>
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                Exposition SW
-                                              </span>
-                                            </div>
-                                          </div>
-                                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
-                                            <div className="text-[11px] text-muted-foreground mb-1">Landbedeckung</div>
-                                            <div className="flex flex-wrap gap-1">
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                Wald 18%
-                                              </span>
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                Acker 52%
-                                              </span>
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                Siedlung 24%
-                                              </span>
-                                            </div>
-                                          </div>
-                                          <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
-                                            <div className="text-[11px] text-muted-foreground mb-1">Druck</div>
-                                            <div className="flex flex-wrap gap-1">
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                Versiegelung 22%
-                                              </span>
-                                              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-status-green-bg text-status-green">
-                                                Straßennähe 95 m
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </TabsContent>
-                                    <TabsContent value="evidence" className="space-y-6">
-                                      <div>
-                                        <div className="text-base font-semibold text-foreground mb-3">
-                                          Evidenz
-                                        </div>
-                                        <div className="rounded-xl border border-border/50 bg-background/70 p-4">
-                                          <div className="flex items-center justify-between mb-3">
-                                            <div className="text-sm font-semibold text-foreground">Quellen</div>
-                                            <div className="text-xs text-muted-foreground">2 Links</div>
-                                          </div>
-                                          <div className="grid gap-2 sm:grid-cols-2">
-                                            {s.evidenceSourceUrl && (
-                                              <a
-                                                href={s.evidenceSourceUrl}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="group rounded-lg border border-primary/35 bg-primary/10 p-3 text-left text-primary transition hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/15"
-                                                onClick={(event) => event.stopPropagation()}
-                                              >
-                                                <div className="flex items-center justify-between">
-                                                  <span className="text-sm font-semibold text-foreground">
-                                                    {s.evidenceSourceLabel ?? "GBIF Datenquelle"}
-                                                  </span>
-                                                </div>
-                                                <div className="mt-1 text-xs text-muted-foreground">
-                                                  Vorkommensnachweise und Beobachtungen
-                                                </div>
-                                                <div className="mt-2 text-[11px] text-primary/80 truncate">
-                                                  {s.evidenceSourceUrl}
-                                                </div>
-                                              </a>
-                                            )}
-                                            <a
-                                              href="https://artenschutz.naturschutzinformationen.nrw.de/artenschutz/de/arten/gruppe/voegel/rasterkarten/103013"
-                                              target="_blank"
-                                              rel="noreferrer"
-                                              className="group rounded-lg border border-primary/35 bg-primary/10 p-3 text-left text-primary transition hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/15"
-                                              onClick={(event) => event.stopPropagation()}
-                                            >
-                                              <div className="flex items-center justify-between">
-                                                <span className="text-sm font-semibold text-foreground">
-                                                  LANUV Rasterkarte (NRW)
-                                                </span>
-                                              </div>
-                                              <div className="mt-1 text-xs text-muted-foreground">
-                                                Landesweite Rasterdaten und Fachinfo
-                                              </div>
-                                              <div className="mt-2 text-[11px] text-primary/80 truncate">
-                                                artenschutz.naturschutzinformationen.nrw.de/…/103013
-                                              </div>
-                                            </a>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <div className="text-base font-semibold text-foreground mb-3">
-                                          Hinweise
-                                        </div>
-                                        <div className="space-y-4">
-                                          <div className="rounded-xl border border-border/50 bg-background/70 p-4">
-                                            <div className="flex items-center justify-between gap-3">
-                                              <div className="text-sm font-semibold text-foreground">
-                                                Score-Kontext
-                                              </div>
-                                              <div className={`text-sm font-semibold ${getScoreColor(displayScore)}`}>
-                                                {displayScore} ({scoreNarrative.band})
-                                              </div>
-                                            </div>
-                                            <div className="mt-3 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-                                              <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2 sm:col-span-2">
-                                                <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">
-                                                  Eingangsdaten & Modellannahmen
-                                                </div>
-                                                <div>{scoreNarrative.inputModel}</div>
-                                              </div>
-                                              <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
-                                                <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">
-                                                  Gütemaße
-                                                </div>
-                                                <div>{scoreNarrative.quality}</div>
-                                              </div>
-                                              <div className="rounded-lg border border-border/40 bg-background/60 px-3 py-2">
-                                                <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">
-                                                  Unsicherheit
-                                                </div>
-                                                <div>{scoreNarrative.uncertainty}</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-                                            {s.reasons.slice(0, 5).map((reason, i) => {
-                                              const [label, ...rest] = reason.split(":");
-                                              const hasLabel = rest.length > 0;
-                                              const body = hasLabel ? rest.join(":").trim() : reason;
-                                              return (
-                                                <div
-                                                  key={i}
-                                                  className="rounded-lg border border-border/40 bg-background/60 px-3 py-2"
-                                                >
-                                                  {hasLabel && (
-                                                    <div className="text-[11px] text-muted-foreground mb-1 uppercase tracking-wide">
-                                                      {label}
-                                                    </div>
-                                                  )}
-                                                  <div>{body}</div>
-                                                </div>
-                                              );
-                                            })}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </TabsContent>
-                                  </Tabs>
                                 </div>
                               </DialogContent>
-            </Dialog>
           </div>
         </TableCell>
-        <TableCell className="py-2" />
+        </Dialog>
       </TableRow>
     );
   };
@@ -630,12 +452,10 @@ const SpeciesListSection = ({
                     <TableRow className="bg-muted/30 text-xs">
                       <TableHead className="w-[44px]"></TableHead>
                       <TableHead>Art</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead className="text-center">Prüfung</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
-                      <TableHead className="text-center">Konfidenz</TableHead>
-                      <TableHead className="text-center">Details</TableHead>
-                      <TableHead className="w-[90px]"></TableHead>
+                      <TableHead className="text-center">{"Pr\u00fcfung"}</TableHead>
+                      <TableHead className="text-center">{"Fl\u00e4chenanteil"}</TableHead>
+                      <TableHead className="text-center">Kompensation</TableHead>
+                      <TableHead className="text-center">Quelle</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
