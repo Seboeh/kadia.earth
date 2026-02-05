@@ -294,6 +294,48 @@ const SpeciesListSection = ({
                                               </div>
                                             </div>
                                           </div>
+
+                                          <div className="rounded-lg border border-border/50 bg-background p-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                              <div className="text-xs font-semibold text-foreground">O1.1 Habitatoptimierungen im Gruenland</div>
+                                              <span className="rounded-full bg-status-yellow/20 px-2 py-0.5 text-[10px] font-semibold text-status-yellow">Prioritaet 2</span>
+                                            </div>
+                                            <div className="mt-1 text-xs">Orientierungswert: 1 ha pro Paar</div>
+                                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                                              <div>
+                                                <div className="text-[11px] font-semibold text-foreground">Massnahmen</div>
+                                                <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                                  <li>Extensivmahd oder Beweidung (max. 2 Rinder/ha bis Mitte August)</li>
+                                                  <li>Keine Mahd waehrend der Brutzeit (April bis Mitte August)</li>
+                                                  <li>Kraeuteranteil erhoehen (autochthones Saatgut, nicht dichtwuechsig)</li>
+                                                  <li>Keine Pestizide und kein Duenger</li>
+                                                </ul>
+                                              </div>
+                                              <div>
+                                                <div className="text-[11px] font-semibold text-foreground">Standortanforderungen</div>
+                                                <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                                  <li>&gt;120 m zu Wald, Wegen und Siedlungen; trockene Standorte bevorzugen</li>
+                                                  <li>Keine wuechsigen Flaechen (ggf. vorher ausmagern)</li>
+                                                  <li>Gruenlandgebiete priorisieren, kein Umbruch</li>
+                                                  <li>Mosaik aus kurz- und langrasigen Strukturen</li>
+                                                </ul>
+                                              </div>
+                                            </div>
+                                            <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+                                              <span className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5">Wirksamkeit: 2 Jahre (Optimierung), 5 Jahre (Neuanlage)</span>
+                                              <span className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5">Eignung: hoch</span>
+                                            </div>
+                                          </div>
+
+                                          <div className="rounded-lg border border-border/50 bg-background p-3">
+                                            <div className="text-[11px] font-semibold text-foreground">Allgemeine Hinweise</div>
+                                            <ul className="mt-1 list-disc space-y-1 pl-4 text-xs">
+                                              <li>Monitoring: massnahmen- und populationsbezogen erforderlich</li>
+                                              <li>Pflege: jaehrliche Rotation und Brutzeitschonung</li>
+                                              <li>Kombination: Acker + Gruenland als Mosaik ist optimal</li>
+                                              <li>Risiko: niedrige Populationsdichte kann Besiedlung verzoegern</li>
+                                            </ul>
+                                          </div>
                                         </div>
                                       ) : s.name === "Rotmilan" ? (
                                         <div className="mt-3 space-y-4 text-sm text-muted-foreground">
@@ -317,6 +359,18 @@ const SpeciesListSection = ({
                                               <li>5 ha Extensivgruenland pro Paar</li>
                                               <li>Gruenland priorisieren! (Expertenworkshop)</li>
                                               <li>max. 1 km zum Horst</li>
+                                            </ul>
+                                          </div>
+
+                                          <div className="rounded-lg border border-border/50 bg-background p-3">
+                                            <div className="flex items-center justify-between gap-2">
+                                              <div className="text-xs font-semibold text-foreground">B1.1 Biotopverbund</div>
+                                              <span className="rounded-full bg-status-yellow/20 px-2 py-0.5 text-[10px] font-semibold text-status-yellow">Prioritaet 2</span>
+                                            </div>
+                                            <ul className="mt-2 list-disc space-y-1 pl-4 text-xs">
+                                              <li>3 ha Waldrand-Saeume/Brachen an Acker in Waldnaehe</li>
+                                              <li>Randstreifen (3-10 m): Wildkraeuter, keine Duengung/Pestizide</li>
+                                              <li>Prognose: Wert 2-&gt;5 (LANUK), unterstuetzt Nahrung/Jagdhabitat</li>
                                             </ul>
                                           </div>
                                         </div>
