@@ -1,0 +1,99 @@
+# This file is not in use. It only holds potential future additions to existing models
+ProjectGeneralInformation:
+  type: object
+  properties:
+    responsiblePerson:
+      type: string
+      example: "John Doe"
+      description: Name of the person who is the projects 'Head Of'
+    reportingYear:
+      type: string
+      format: year
+      example: "2025"
+      description: Year, when the project was reported
+    partnerNgo:
+      $ref: "#/components/schemas/Company"
+      description: Associated NGO
+    geocoordinates:
+      $ref: "#/components/schemas/Geocoordinates"
+      description: Geocoordinates of the region
+    biome:
+      type: string
+      example: "Rainforest"
+      description: Type of biome
+    measures:
+      type: string
+      example: "Biodiversity"
+      description: "Measures, that are extracted during the project"
+    governanceStructure:
+      type: string
+      example: ""
+      description: ""
+    standards:
+      type: array
+      items:
+        type: string
+      example: "ISO XYZ"
+      description: "Norms & Standards that are utilized or taken into account within the projects scope"
+    coFinancing:
+      type: string
+      example: ""
+      description: "Name of Co-financing company or NGO"
+    corporateContribution:
+      $ref: "#/components/schemas/MoneyAmount"
+      description: "Amount of money the associated company brought into the project (sum of all contributions)"
+    ngoContribution:
+      $ref: "#/components/schemas/MoneyAmount"
+      description: "Amount of money the associated NGO brought into the project (sum of all contributions)"
+    projectCompliance:
+      $ref: "#/components/schemas/ProjectCompliance"
+ProjectSpecificInformation:
+  type: object
+  properties:
+    riskSignificance:
+      type: string
+      enum: [ HIGH, MEDIUM, LOW ]
+      example: MEDIUM
+      description: Significance level of identified risks
+    habitats:
+      type: array
+      items:
+        type: string
+      example: [ "Forest", "Wetland" ]
+      description: Types of habitats targeted or affected by the project
+    areaHa:
+      type: number
+      example: 0
+      description: Area of the project site in hectares
+    impactMeasurement:
+      type: string
+      example: ""
+      description: Method or indicators used for impact measurement
+    waterRelevant:
+      type: boolean
+      example: false
+      description: Indicates whether the project has water-related relevance
+    waterConsumptionData:
+      type: string
+      example: ""
+      description: Data on water usage and consumption
+    waterBenefitsCommunities:
+      type: string
+      example: ""
+      description: Description of how water-related benefits reach local communities
+    communityBenefits:
+      type: string
+      example: ""
+      description: Social or economic benefits provided to communities
+    genderEquality:
+      type: string
+      example: ""
+      description: Gender equality and inclusiveness measures
+    incomeBenefits:
+      type: string
+      example: ""
+      description: Income benefits generated for local communities
+    humanRightsPolicies:
+      type: string
+      example: ""
+      description: Human rights policies and safeguards applied in the project

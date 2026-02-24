@@ -1,0 +1,15 @@
+services:
+  openapi-generator:
+    image: openapitools/openapi-generator-cli:v7.8.0
+    container_name: kadia_api_client_generator
+    volumes:
+      - ./openapi.yml:/local/openapi/openapi.yml
+      - ./generated:/local/generated
+      - ./.openapi-generator-config.yml:/local/config.yml
+    command: [
+      "generate",
+      "-i", "/local/openapi/openapi.yml",
+      "-g", "typescript-fetch",
+      "-o", "/local/generated"
+    ]
+

@@ -1,0 +1,11 @@
+generatorName: typescript-fetch
+inputSpec: lib/openapi/openapi.yml
+output: lib/openapi/generated
+additionalProperties:
+  npmName: "@kadia/api-client"
+  npmVersion: "1.0.0"
+  supportsES6: true
+  withSeparateModelsAndApi: true
+  modelPropertyNaming: "camelCase"
+  useSingleRequestParameter: true
+  enumPropertyNaming: "original"

@@ -1,0 +1,401 @@
+openapi: 3.1.4
+
+info:
+  title: kadia API
+  description: Definition of datatypes and endpoints
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development server
+  - url: https://test.kadia.earth/api/v1
+    description: Test server
+  - url: https://kadia.earth/api/v1
+    description: Production server
+
+paths:
+  /projects:
+    get:
+      summary: Returns a list of projects.
+      description: Returns all projects, managed by the corresponding team of the requesting user.
+      responses:
+        200:
+          description: A JSON array of projectOverview information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+  /projects/{projectId}:
+    post:
+      summary: Updates a specific project
+      description: The project with the given id will be updated. This is not a partial update, but a whole overwrite.
+      operationId: updateProjectById
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+      responses:
+        200:
+          description: A JSON object of the updated project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        400:
+          description: Bad request
+
+
+components:
+  schemas:
+    WaterConsumptionEntry:
+      type: object
+      properties:
+        periodStartDate:
+          type: string
+          format: date
+          example: "2022-01-31"
+          description: Describes the beginning of a consumption period.
+        periodEndDate:
+          type: string
+          format: date
+          example: "2022-02-31"
+          description: Describes the end of a consumption period.
+        consumptionInLiters:
+          type: number
+          example: 10000
+          description: Defines the amount of liters that have been extracted/ consumed within the defined period
+
+      example: [ "Action 1 to improve water quality", "Action 1 to improve air quality" ]
+      description: Water consumption or extraction in liters
+    Company:
+      type: object
+      properties:
+        id:
+          type: number
+          readOnly: true
+        name:
+          type: string
+    Currency:
+      type: object
+      properties:
+        id:
+          type: number
+        value:
+          enum:
+            - 'EUR'
+            - 'USD'
+    MoneyAmount:
+      type: object
+      properties:
+        id:
+          type: number
+          readOnly: true
+        amount:
+          type: number
+        currency:
+          $ref: "#/components/schemas/Currency"
+    Geocoordinates:
+      type: object
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+    ProjectCompliance:
+      type: object
+      properties:
+        financialDistribution:
+          type: object
+          properties:
+            contributions:
+              type: array
+              items:
+                $ref: "#/components/schemas/FinancialContribution"
+        incidents:
+          type: array
+          items:
+            type: string
+          example: [ "Forest fire" ]
+          description: "Names of incidents that has taken place"
+        controlMechanisms:
+          type: array
+          items:
+            type: string
+          example: [ "XY Audit" ]
+          description: "Descriptions of control mechanisms within the project scope"
+    FinancialContribution:
+      type: object
+      properties:
+        contributor:
+          $ref: "#/components/schemas/Company"
+        contributions:
+          type: array
+          items:
+            type: number
+    ProjectSocialImpact:
+      type: object
+      properties:
+        employment:
+          type: string
+          example: "Ranger, local laborers"
+          description: "Jobs created by the project"
+        educationMeasures:
+          type: string
+          example: "Training XY"
+          description: "Education measures, programs or trainings, offered within the project scope"
+    ProjectStory:
+      type: object
+      properties:
+        id:
+          type: number
+          readOnly: true
+        title:
+          type: string
+          description: "Title of the story"
+          example: "A good story"
+        content:
+          type: string
+          description: "Story text"
+          example: "Long story short, this is an awesome story..."
+    ProjectRuntime:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date
+          example: "2024-01-01"
+        endDate:
+          type: string
+          format: date
+          example: "2024-01-01"
+    ProjectPhase:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Kickoff"
+          description: "Name of the project phase"
+        description:
+          type: string
+          example: "This phases aim is to..."
+          description: "This field describes the phases destiny"
+    ProjectPhaseStatus:
+      type: string
+      enum: [ PLANNED, IN_PROGRESS, DONE ]
+      example: DONE
+      description: Describes the status of a specific project phase
+    ProjectPhaseEntry:
+      type: object
+      properties:
+        orderNumber:
+          type: number
+          example: 1
+          description: "Defines the order number of the phase"
+        phase:
+          $ref: "#/components/schemas/ProjectPhase"
+        status:
+          $ref: "#/components/schemas/ProjectPhaseStatus"
+    ProjectAim:
+      type: string
+      example: "Create a 'company forest'"
+      description: "Description of the aim to archive"
+    ProjectAimMeasure:
+      type: string
+      example: "Bought 20ha rain forest in Peru"
+      description: "Detailed description of the action that was done"
+    ProjectMeasure:
+      type: object
+      properties:
+        aim:
+          $ref: "#/components/schemas/ProjectAim"
+        measure:
+          $ref: "#/components/schemas/ProjectMeasure"
+    ProjectActorRole:
+      type: object
+      properties:
+        actor:
+          $ref: "#/components/schemas/Company"
+        role:
+          type: string
+          example: "Is financing the project"
+          description: "Description of the actors role within the project"
+    ProjectGovernance:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: number
+          readOnly: true
+          example: 1
+          description: Unique identifier
+        description:
+          type: string
+          example: "The governance structure is quite simple"
+          description: "General description of the projects governance structure"
+        governanceEntries:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectActorRole"
+    ProjectGeneralInformation:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: number
+          readOnly: true
+          example: 1
+          description: Unique identifier
+        title:
+          type: string
+          example: "Example project"
+          description: Project name / title
+        sponsor:
+          type: string
+          example: "Sponsor name"
+          description: Name of the projects sponsor (Projektträger)
+        partnerCompany:
+          $ref: '#/components/schemas/Company'
+          description: Associated partner company
+        financingAmount:
+          $ref: "#/components/schemas/MoneyAmount"
+          description: Amount of contribution (Finanzierungssumme)
+        projectRuntime:
+          $ref: "#/components/schemas/ProjectRuntime"
+          description: Start & Enddate of the projects runtime
+        projectLocation:
+          type: string
+          example: "Canada"
+          description: "Name of the location / region, where the project takes place (Standort / Gebiet)"
+        protectedArea:
+          type: string
+          example: "Protected Area"
+          description: "Name of the protected area that is included within the project region (Informationen bzgl. Schutzgebiet)"
+        areaCoordinates:
+          $ref: "#/components/schemas/Geocoordinates"
+          description: "Coordinates of the project area"
+    ProjectSpecificInformation:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: number
+          readOnly: true
+          example: 1
+          description: Unique identifier
+        projectMeasures:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectMeasure"
+        projectGovernance:
+          $ref: "#/components/schemas/ProjectGovernance"
+        projectPhases:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectPhaseEntry"
+        stakeholderHandlingDescription:
+          type: string
+          example: "We write articles to inform the stakeholders about project status changes."
+          description: "Description of measures to include stakeholders and communities"
+        sdgReference:
+          type: string
+          example: "SDGs are referenced via..."
+          description: "Describes the reference to SDGs"
+        certifications:
+          type: array
+          enum: [ FSC, FAIRTRADE, EMAS ]
+          example: "FAIRTRADE"
+          description: "List of standard certifications the project covers"
+    ProjectEnvironmentalImpact:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: number
+          readOnly: true
+          example: 1
+          description: Unique identifier
+        co2Savings:
+          type: number
+          example: 0
+          description: Amount of CO₂ saved (in kg)
+        focusSpecies:
+          type: array
+          items:
+            type: string
+          example: [ "Eagle", "Deer" ]
+          description: Species that are the primary focus of the project
+        biodiversityReferenceState:
+          type: string
+          example: "Reference example"
+          description: Baseline data collected before project implementation (as text)
+        monitoringAndImpactMeasures:
+          type: array
+          items:
+            type: string
+          example: [ "Biodiversity factor 1", "Biodiversity factor 2" ]
+          description: Monitoring and impact measures, utilized within the project scope
+        habitatConditionInformation:
+          type: string
+          example: "Good condition"
+          description: Information about the condition of the habitat
+        naturalRiskChanges:
+          type: array
+          items:
+            type: string
+          example: [ "Risk X increased", "Risk X changed in a positive way" ]
+          description: Description of the development
+        ecosystemServices:
+          type: array
+          items:
+            type: string
+          example: [ "Water purification", "Carbon sequestration" ]
+          description: Ecosystem services supported or improved by the project
+        soilWaterAirImprovements:
+          type: array
+          items:
+            type: string
+          example: [ "Action 1 to improve water quality", "Action 1 to improve air quality" ]
+          description: Actions taken to improve soil, water, and air quality
+        waterConsumption:
+          type: array
+          items:
+            $ref: "#/components/schemas/WaterConsumptionEntry"
+    Project:
+      type: object
+      required:
+        - id
+        - ProjectGeneralInformation
+        - ProjectSpecificInformation
+        - ProjectEnvironmentalImpact
+        - ProjectSocialImpact
+        - ProjectCompliance
+      properties:
+        id:
+          type: number
+          readOnly: true
+          example: 1
+          description: Unique identifier
+        ProjectGeneralInformation:
+          $ref: "#/components/schemas/ProjectGeneralInformation"
+        ProjectSpecificInformation:
+          $ref: "#/components/schemas/ProjectSpecificInformation"
+        ProjectEnvironmentalImpact:
+          $ref: "#/components/schemas/ProjectEnvironmentalImpact"
+        ProjectSocialImpact:
+          $ref: "#/components/schemas/ProjectSocialImpact"
+        ProjectCompliance:
+          $ref: "#/components/schemas/ProjectCompliance"
+
