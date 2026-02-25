@@ -83,13 +83,17 @@ Erstellung strukturierter Dokumentationen für:
 
 ---
 
-## 🧠 Technologie (Beispiel – anpassen!)
+## 🧠 Technologie
+- Frontend: Next.js (App Router) mit React + TypeScript, Tailwind CSS, Radix UI, Framer Motion  
+- Backend: Next.js API Routes + Server Actions (Node.js Runtime)  
+- Datenbank: PostgreSQL mit Drizzle ORM (inkl. Migrations-Setup), aktuell teilweise Mock-Repositorys für Demo-Flows  
+- Auth & Security: Session-basierte Authentifizierung (jose), Passwort-Hashing (bcryptjs)  
+- GIS: Leaflet + React Leaflet + Leaflet-Geoman (Zeichnen/Editieren), Geocoding via Nominatim, Basemap über Esri World Imagery  
+- State/Data Fetching: SWR + TanStack React Query  
+- Payments: Stripe (Checkout + Webhook)  
+- Datenquellen (fachlich): Behördliche Umweltlayer, Artendatenbanken und Habitatindikatoren (projektspezifisch integrierbar)  
 
-- Frontend: `React / Vue / Next.js / etc.`
-- Backend: `Node.js / Python / etc.`
-- GIS: `Mapbox / Leaflet / OpenLayers / etc.`
-- Datenquellen: Behördliche Umweltlayer, Artendatenbanken
-- KI/ML: Habitat- & Artenmodellierungen
+
 
 ---
 
