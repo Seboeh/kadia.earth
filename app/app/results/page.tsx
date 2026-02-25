@@ -620,17 +620,8 @@ export default function ResultsPage() {
               <p className="mt-3 pt-1 whitespace-nowrap text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.analysisId}</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
-      </div>
 
-      <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-2xl font-semibold tracking-[-0.012em] text-ink">Ergebnisinformationen</h2>
-        </div>
-      <Card className="app-glass-card rounded-[24px]">
-        <CardContent className="space-y-4">
-          <div className="widget-soft-panel">
+          <div className="rounded-2xl app-glass-panel px-5 py-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
                 <AlertTriangle className="h-5 w-5 text-[#1f8f82]" />
@@ -641,11 +632,15 @@ export default function ResultsPage() {
                 Relevanz: Mittel
               </span>
             </div>
-            <p className="mt-3 text-[1.02rem] font-light leading-tight text-ink/80">
-              Hinweise auf potenziell betroffene Arten; lokale Kompensationsmassnahmen empfohlen.
-            </p>
+            <div className="mt-4 w-full max-w-none">
+              <p className="w-full max-w-none text-[1.02rem] font-semibold leading-tight text-ink/95">
+                Artenschutzrechtlich über Kompensationsmaßnahmen umsetzbar
+              </p>
+              <p className="mt-2 w-full max-w-none text-justify text-[1rem] font-light leading-relaxed text-ink/80">
+                Geschützte Arten oder Lebensräume sind im Prüfbereich nachweisbar, jedoch können durch einfache, branchenübliche Kompensations- und Schutzmaßnahmen (z. B. Brutzeit-Vermeidung, Nistkästen, Abschirmungen) artenschutzrechtliche Konflikte ausgeschlossen werden. Eine ASP Stufe II ist nicht erforderlich.
+              </p>
+            </div>
           </div>
-
         </CardContent>
       </Card>
       </div>

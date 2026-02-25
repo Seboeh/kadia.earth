@@ -6,7 +6,7 @@ export default function AppPage() {
   return (
     <div className="mx-auto w-full max-w-[1280px] pb-10 pt-6">
       <section className="px-2 pb-10 pt-4 text-center sm:px-4">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-[#dce8e4] px-5 py-2 text-sm text-brand">
+        <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-[#F7E7A6]/70 px-5 py-2 text-sm text-ink">
           <Shield className="h-4 w-4" />
           <span>One-Click Arten- &amp; Genehmigungs-Screening</span>
         </div>
