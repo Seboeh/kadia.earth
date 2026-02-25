@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/app", label: "Map" },
   { href: "/app/results", label: "Dashboard" },
-  { href: "/app/report", label: "Bericht" }
+  { href: "/app/report", label: "Bericht" },
+  { href: "/app/profile", label: "Profil" }
 ] as const;
 
 export function AppShellNav() {

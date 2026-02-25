@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Bell, ChevronDown, CircleHelp, CreditCard, LogOut, Settings, ShieldCheck, UserCircle2 } from "lucide-react";
+import { AppGridBackground } from "@/components/app/background/AppGridBackground";
 
 export default function AppAreaLayout({
   children
@@ -7,7 +8,9 @@ export default function AppAreaLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-linen text-ink">
+    <div className="relative min-h-screen overflow-x-hidden bg-linen text-ink">
+      <AppGridBackground />
+
       <header className="fixed inset-x-0 top-0 z-30 pt-2">
         <div className="mx-auto flex w-full items-center px-5 sm:px-6">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between rounded-full border border-white/45 bg-linen/55 px-4 py-2 shadow-[0_16px_40px_rgba(20,40,29,0.16),inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-xl supports-[backdrop-filter]:bg-linen/50">
@@ -33,7 +36,7 @@ export default function AppAreaLayout({
               <details className="group relative">
                 <summary className="flex list-none cursor-pointer items-center gap-2 rounded-full border border-white/30 bg-white/40 px-2 py-1.5 shadow-[0_14px_34px_rgba(20,40,29,0.18),inset_0_1px_0_rgba(255,255,255,0.58)] backdrop-blur-xl transition hover:bg-white/50 [&::-webkit-details-marker]:hidden">
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/55 bg-[#2E5C55]/16 text-xs font-semibold text-[#2E5C55]">
-                    S
+                    M
                   </span>
                   <ChevronDown className="h-4 w-4 text-ink/60 transition group-open:rotate-180" />
                 </summary>
@@ -41,16 +44,16 @@ export default function AppAreaLayout({
                 <div className="absolute right-0 mt-2 w-72 overflow-hidden rounded-2xl border border-white/55 bg-white/86 p-3 text-sm shadow-[0_20px_44px_rgba(20,40,29,0.16)] backdrop-blur-xl">
                   <div className="flex items-center gap-3 rounded-xl border border-slate-300/30 bg-white/65 p-3">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-[#2E5C55]/16 text-sm font-semibold text-[#2E5C55]">
-                      S
+                      M
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-ink">Max Mustermann</p>
-                      <p className="truncate text-xs text-ink/65">max.mustermann@kadia.earth</p>
+                      <p className="truncate text-sm font-semibold text-ink">Mara Hoffmann</p>
+                      <p className="truncate text-xs text-ink/65">mara.hoffmann@kadia.earth</p>
                     </div>
                   </div>
 
                   <div className="mt-2 space-y-1">
-                    <Link href="/dashboard/general" className="flex items-center gap-2 rounded-lg px-3 py-2 text-ink/85 transition hover:bg-white/70">
+                    <Link href="/app/profile" className="flex items-center gap-2 rounded-lg px-3 py-2 text-ink/85 transition hover:bg-white/70">
                       <UserCircle2 className="h-4 w-4 text-brand" />
                       Profil
                     </Link>
@@ -91,7 +94,9 @@ export default function AppAreaLayout({
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[90rem] px-3 py-24 sm:px-5 lg:px-8">{children}</main>
+      <main className="relative z-10 mx-auto w-full max-w-[90rem] px-3 py-24 sm:px-5 lg:px-8">
+        {children}
+      </main>
     </div>
   );
 }

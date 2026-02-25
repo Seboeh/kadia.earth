@@ -29,21 +29,29 @@ export default function AppPage() {
             <AccordionTrigger className="text-lg font-medium text-ink no-underline hover:no-underline">
               <span className="flex items-center gap-3">
                 <Info className="h-5 w-5 text-brand" />
-                Wie Kadia arbeitet
+                Hinweis
               </span>
             </AccordionTrigger>
             <AccordionContent className="text-sm leading-relaxed text-ink/75">
-              Kadia kombiniert Geodaten, Habitatindikatoren und Artenhinweise zu einer
-              schnellen Ersteinschätzung (Mock-Version). Das Ergebnis ersetzt keine
-              behördliche Prüfung, hilft aber bei einer frühen Standortbewertung.
+              Wir nutzen bewährte technologische Ansätze, um die wichtigsten Informationen
+              aus behördlichen Datenbanken, Habitatindikatoren und Artenhinweisen
+              zusammenzuführen. Auf dieser Basis liefern wir eine fundierte
+              Ersteinschätzung für Ihr Projektgebiet und führen eine artenschutzrechtliche
+              Relevanzprüfung durch.
+              <br />
+              <br />
+              Alle Daten werden für diese Einschätzung fachlich und behördlich orientiert
+              aufbereitet. Abhängig vom Ergebnis bieten wir Ihnen die Möglichkeit, einen
+              Bericht vorzubereiten bzw. an die zuständige Behörde weiterzuleiten oder
+              relevante Informationen für weiterführende Prüfmechanismen zu nutzen.
+              <br />
+              <br />
+              Diese Artenschutzanalyse ersetzt keine artenschutzrechtliche Feldkartierung.
             </AccordionContent>
           </AccordionItem>
         </Accordion>
       </section>
 
-      <p className="mt-12 text-center text-sm text-ink/45">
-        Mockup-Version - Die Anzeige ersetzt keine behoerdliche Pruefung, Kartierung oder Gutachten.
-      </p>
     </div>
   );
 }

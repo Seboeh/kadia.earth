@@ -273,6 +273,34 @@
     background: rgb(255 255 255 / 0.36);
     padding: 0.75rem 1rem;
   }
+
+  /* Shared surface primitives for /app pages */
+  .app-glass-card {
+    border: 1px solid rgb(255 255 255 / 0.58);
+    background: rgb(255 255 255 / 0.74);
+    box-shadow: 0 16px 42px rgba(20, 40, 29, 0.1);
+    -webkit-backdrop-filter: blur(2.5px);
+    backdrop-filter: blur(2.5px);
+  }
+
+  .app-glass-panel {
+    border: 1px solid rgb(203 213 225 / 0.46);
+    background: rgb(255 255 255 / 0.55);
+  }
+
+  .app-soft-chip {
+    border: 1px solid rgb(192 211 205 / 0.85);
+    background: rgb(238 247 244 / 0.92);
+    color: rgb(33 67 60 / 0.95);
+  }
+
+  .app-brand-button {
+    background: #1f8f82;
+    color: #fff;
+  }
+  .app-brand-button:hover {
+    background: #187367;
+  }
 }
 
 /*

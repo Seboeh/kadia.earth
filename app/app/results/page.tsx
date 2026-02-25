@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Inter } from "next/font/google";
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import {
   AlertTriangle,
   CalendarClock,
@@ -26,12 +24,6 @@ import {
   SCREENING_SESSION_KEY,
   ScreeningSessionData
 } from "@/lib/app/screeningSession";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap"
-});
 
 type SpeciesRow = {
   art: string;
@@ -502,31 +494,7 @@ function formatAnalysisTime(isoTimestamp: string) {
   }).format(date);
 }
 
-function useMouseFollower() {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  useEffect(() => {
-    const handleMove = (event: PointerEvent) => {
-      mouseX.set(event.clientX);
-      mouseY.set(event.clientY);
-    };
-
-    mouseX.set(window.innerWidth / 2);
-    mouseY.set(window.innerHeight / 2);
-    window.addEventListener("pointermove", handleMove);
-
-    return () => {
-      window.removeEventListener("pointermove", handleMove);
-    };
-  }, [mouseX, mouseY]);
-
-  return { mouseX, mouseY };
-}
-
 export default function ResultsPage() {
-  const { mouseX, mouseY } = useMouseFollower();
-  const spotlight = useMotionTemplate`radial-gradient(280px at ${mouseX}px ${mouseY}px, rgba(10, 10, 10, 0.42), transparent 70%)`;
   const [sessionData, setSessionData] = useState<ScreeningSessionData | null>(null);
   const [speciesExpanded, setSpeciesExpanded] = useState(false);
   const [habitatExpanded, setHabitatExpanded] = useState(false);
@@ -592,111 +560,64 @@ export default function ResultsPage() {
 
   if (!sessionData) {
     return (
-      <div className={`relative min-h-screen overflow-x-hidden ${inter.className}`}>
-        <div className="pointer-events-none fixed inset-0 z-0">
-          <div className="absolute inset-0 bg-transparent" />
-          <div
-            className="absolute inset-0 opacity-28"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(46,92,85,0.18) 1.1px, transparent 1.2px)",
-              backgroundSize: "18px 18px"
-            }}
-          />
-          <motion.div
-            className="absolute inset-0 opacity-92"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(46,92,85,0.5) 1.3px, transparent 1.4px)",
-              backgroundSize: "18px 18px",
-              WebkitMaskImage: spotlight,
-              maskImage: spotlight
-            }}
-          />
-        </div>
-
-        <div className="relative z-10">
-          <Card className="rounded-[24px] border border-white/55 bg-white/72 shadow-[0_10px_26px_rgba(20,40,29,0.08)] backdrop-blur-[2.5px]">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold tracking-[-0.01em] text-ink">Ergebnisdashboard</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm text-ink/80">
-              <p>Es wurde noch kein markierter Bereich fuer das Screening uebernommen.</p>
-              <Button asChild className="rounded-full bg-[#9fd1c8] px-6 text-white hover:bg-[#8fc6bc]">
-                <Link href="/app">Zurueck zur Kartenauswahl</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="mx-auto w-full max-w-[1280px] pb-10 pt-6">
+        <Card className="app-glass-card rounded-[24px]">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold tracking-[-0.01em] text-ink">Ergebnisdashboard</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm text-ink/80">
+            <p>Es wurde noch kein markierter Bereich fuer das Screening uebernommen.</p>
+            <Button asChild className="app-brand-button rounded-full px-6">
+              <Link href="/app">Zurueck zur Kartenauswahl</Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className={`relative min-h-screen overflow-x-hidden ${inter.className}`}>
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-transparent" />
-        <div
-          className="absolute inset-0 opacity-28"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(46,92,85,0.18) 1.1px, transparent 1.2px)",
-            backgroundSize: "18px 18px"
-          }}
-        />
-        <motion.div
-          className="absolute inset-0 opacity-92"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(46,92,85,0.5) 1.3px, transparent 1.4px)",
-            backgroundSize: "18px 18px",
-            WebkitMaskImage: spotlight,
-            maskImage: spotlight
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 space-y-6 text-[0.95rem]">
+    <div className="mx-auto w-full max-w-[1280px] space-y-6 pb-10 pt-6 text-[0.95rem]">
         <div className="space-y-3">
         <h2 className="text-2xl font-semibold tracking-[-0.012em] text-ink">Projektinformationen</h2>
-      <Card className="rounded-[24px] border border-white/55 bg-white/72 shadow-[0_10px_26px_rgba(20,40,29,0.08)] backdrop-blur-[2.5px]">
+      <Card className="app-glass-card rounded-[24px]">
         <CardContent className="space-y-4">
-          <div className="rounded-2xl border border-slate-200/90 bg-white/42 px-5 py-4">
+          <div className="rounded-2xl app-glass-panel px-5 py-4">
             <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
               <MapPinned className="h-5 w-5 text-[#1f8f82]" />
               Gemeinde / Stadt
             </p>
-            <p className="mt-3 min-h-[2.25rem] text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.location}</p>
+            <p className="mt-3 pt-1 text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.location}</p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-2xl border border-slate-200/90 bg-white/42 px-5 py-4">
+            <div className="rounded-2xl app-glass-panel px-5 py-4">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
                 <Ruler className="h-5 w-5 text-[#1f8f82]" />
                 Flaeche
               </p>
-              <p className="mt-3 min-h-[2.25rem] text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.area}</p>
+              <p className="mt-3 pt-1 text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.area}</p>
             </div>
-            <div className="rounded-2xl border border-slate-200/90 bg-white/42 px-5 py-4">
+            <div className="rounded-2xl app-glass-panel px-5 py-4">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
                 <LocateFixed className="h-5 w-5 text-[#1f8f82]" />
                 Koordinaten
               </p>
-              <p className="mt-3 min-h-[2.25rem] whitespace-nowrap text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.coordinates}</p>
+              <p className="mt-3 pt-1 whitespace-nowrap text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.coordinates}</p>
             </div>
-            <div className="rounded-2xl border border-slate-200/90 bg-white/42 px-5 py-4">
+            <div className="rounded-2xl app-glass-panel px-5 py-4">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
                 <CalendarClock className="h-5 w-5 text-[#1f8f82]" />
                 Analysezeitraum
               </p>
-              <p className="mt-3 min-h-[2.25rem] text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.analysisTime}</p>
+              <p className="mt-3 pt-1 text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.analysisTime}</p>
             </div>
-            <div className="rounded-2xl border border-slate-200/90 bg-white/42 px-5 py-4">
+            <div className="rounded-2xl app-glass-panel px-5 py-4">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
                 <Hash className="h-5 w-5 text-[#1f8f82]" />
                 Analyse-ID
               </p>
-              <p className="mt-3 min-h-[2.25rem] whitespace-nowrap text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.analysisId}</p>
+              <p className="mt-3 pt-1 whitespace-nowrap text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.analysisId}</p>
             </div>
           </div>
         </CardContent>
@@ -707,7 +628,7 @@ export default function ResultsPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-2xl font-semibold tracking-[-0.012em] text-ink">Ergebnisinformationen</h2>
         </div>
-      <Card className="rounded-[24px] border border-white/55 bg-white/72 shadow-[0_10px_26px_rgba(20,40,29,0.08)] backdrop-blur-[2.5px]">
+      <Card className="app-glass-card rounded-[24px]">
         <CardContent className="space-y-4">
           <div className="widget-soft-panel">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -733,7 +654,7 @@ export default function ResultsPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-2xl font-semibold tracking-[-0.012em] text-ink">Karten- und Raumanalyse</h2>
         </div>
-      <Card className="rounded-[24px] border border-white/55 bg-white/72 shadow-[0_10px_26px_rgba(20,40,29,0.08)] backdrop-blur-[2.5px]">
+      <Card className="app-glass-card rounded-[24px]">
         <CardContent>
           <ResultAreaMapClient polygon={sessionData.polygon} />
         </CardContent>
@@ -742,7 +663,7 @@ export default function ResultsPage() {
 
       <div className="space-y-3">
         <h2 className="text-[1.65rem] font-semibold tracking-[-0.012em] text-ink">Priorisierte Artenliste</h2>
-        <Card className="overflow-hidden rounded-[24px] border border-white/55 bg-white/72 shadow-[0_10px_26px_rgba(20,40,29,0.08)] backdrop-blur-[2.5px]">
+        <Card className="overflow-hidden app-glass-card rounded-[24px]">
           <CardHeader className="border-b border-slate-200/70 px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="flex items-center gap-2 text-[0.98rem] font-semibold text-ink/95">
@@ -755,7 +676,7 @@ export default function ResultsPage() {
               </p>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-300/65 bg-white/60 px-3 py-1.5 text-sm font-medium text-ink/90 transition hover:bg-white/80"
+                className="inline-flex items-center gap-2 rounded-xl app-glass-panel px-3 py-1.5 text-sm font-medium text-ink/90 transition hover:bg-white/80"
               >
                 <Download className="h-4 w-4" />
                 CSV Export
@@ -834,7 +755,7 @@ export default function ResultsPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedCompensation(row)}
-                          className="rounded-xl border border-slate-300/65 bg-white/60 px-3.5 py-[3px] text-[0.74rem] font-medium text-ink/90 transition hover:text-[#1f8f82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E5C55]/35"
+                          className="rounded-xl app-glass-panel px-3.5 py-[3px] text-[0.74rem] font-medium text-ink/90 transition hover:text-[#1f8f82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E5C55]/35"
                         >
                           Info
                         </button>
@@ -865,7 +786,7 @@ export default function ResultsPage() {
               <button
                 type="button"
                 onClick={() => setSpeciesExpanded((current) => !current)}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-300/65 bg-white/60 text-ink/70"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-xl app-glass-panel text-ink/70"
                 aria-label={speciesExpanded ? "Artenliste einklappen" : "Artenliste ausklappen"}
               >
                 {speciesExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -877,7 +798,7 @@ export default function ResultsPage() {
 
       <div className="space-y-3">
         <h2 className="text-[1.65rem] font-semibold tracking-[-0.012em] text-ink">Habitatindikatoren & Umwelt-Praediktoren</h2>
-        <Card className="overflow-hidden rounded-[24px] border border-white/55 bg-white/72 shadow-[0_10px_26px_rgba(20,40,29,0.08)] backdrop-blur-[2.5px]">
+        <Card className="overflow-hidden app-glass-card rounded-[24px]">
           <CardHeader className="border-b border-slate-200/70 px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="flex items-center gap-2 text-[0.98rem] font-semibold text-ink/95">
@@ -890,7 +811,7 @@ export default function ResultsPage() {
               </p>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-300/65 bg-white/60 px-3 py-1.5 text-sm font-medium text-ink/90 transition hover:bg-white/80"
+                className="inline-flex items-center gap-2 rounded-xl app-glass-panel px-3 py-1.5 text-sm font-medium text-ink/90 transition hover:bg-white/80"
               >
                 <Download className="h-4 w-4" />
                 CSV Export
@@ -963,7 +884,7 @@ export default function ResultsPage() {
               <button
                 type="button"
                 onClick={() => setHabitatExpanded((current) => !current)}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-300/65 bg-white/60 text-ink/70"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-xl app-glass-panel text-ink/70"
                 aria-label={habitatExpanded ? "Habitatindikatoren einklappen" : "Habitatindikatoren ausklappen"}
               >
                 {habitatExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -984,7 +905,7 @@ export default function ResultsPage() {
               <button
                 type="button"
                 onClick={() => setSelectedCompensation(null)}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink/60 transition hover:bg-slate-100 hover:text-ink"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink/60 transition hover:bg-[#eff5f2] hover:text-ink"
                 aria-label="Popup schliessen"
               >
                 <X className="h-4 w-4" />
@@ -992,7 +913,7 @@ export default function ResultsPage() {
             </div>
 
             <div className="max-h-[80vh] overflow-y-auto px-5 py-4">
-              <div className="rounded-2xl border border-slate-200 p-3">
+              <div className="rounded-2xl app-glass-panel p-3">
                 <ResultAreaMapClient polygon={sessionData.polygon} />
               </div>
 
@@ -1002,7 +923,7 @@ export default function ResultsPage() {
                   <p className="text-xs uppercase tracking-[0.12em] text-ink/45">{compensationDetail.compensation.headline}</p>
                 </div>
 
-                <div className="rounded-xl border border-slate-200/85 bg-white/75 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                <div className="rounded-xl app-glass-panel p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
                   <p className="text-[0.95rem] leading-relaxed text-ink/80">
                     {compensationDetail.compensation.intro}
                   </p>
@@ -1011,7 +932,7 @@ export default function ResultsPage() {
                 {compensationDetail.compensation.sections.map((section) => (
                   <div
                     key={section.title}
-                    className="rounded-xl border border-slate-200/85 bg-white/75 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
+                    className="rounded-xl app-glass-panel p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
                   >
                     <p className="text-[0.92rem] font-semibold text-ink">{section.title}</p>
                     <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[0.9rem] leading-relaxed text-ink/80">
@@ -1022,7 +943,7 @@ export default function ResultsPage() {
                   </div>
                 ))}
 
-                <div className="rounded-xl border border-slate-200/85 bg-white/75 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                <div className="rounded-xl app-glass-panel p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
                   <p className="text-[0.92rem] font-semibold text-ink">Wichtige Hinweise</p>
                   <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[0.9rem] leading-relaxed text-ink/80">
                     {compensationDetail.compensation.notes.map((note) => (
@@ -1031,7 +952,7 @@ export default function ResultsPage() {
                   </ul>
                 </div>
 
-                <div className="rounded-xl border border-slate-200/85 bg-white/75 p-4 text-[0.9rem] text-ink/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                <div className="rounded-xl app-glass-panel p-4 text-[0.9rem] text-ink/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
                   <p className="text-[0.92rem] font-semibold text-ink">Quellen</p>
                   <ul className="mt-2 space-y-1">
                     {compensationDetail.compensation.sources.map((source) => (
@@ -1056,7 +977,7 @@ export default function ResultsPage() {
               <button
                 type="button"
                 onClick={() => setSelectedSource(null)}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink/60 transition hover:bg-slate-100 hover:text-ink"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink/60 transition hover:bg-[#eff5f2] hover:text-ink"
                 aria-label="Quellen-Popup schliessen"
               >
                 <X className="h-4 w-4" />
@@ -1070,8 +991,8 @@ export default function ResultsPage() {
                   onClick={() => setSourceTab("evidenz")}
                   className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
                     sourceTab === "evidenz"
-                      ? "bg-slate-100 text-ink"
-                      : "text-ink/55 hover:bg-slate-50"
+                      ? "bg-[#dbe8e5] text-ink"
+                      : "text-ink/55 hover:bg-[#eff5f2]"
                   }`}
                 >
                   Artenhinweise & Evidenz
@@ -1081,8 +1002,8 @@ export default function ResultsPage() {
                   onClick={() => setSourceTab("praediktoren")}
                   className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
                     sourceTab === "praediktoren"
-                      ? "bg-slate-100 text-ink"
-                      : "text-ink/55 hover:bg-slate-50"
+                      ? "bg-[#dbe8e5] text-ink"
+                      : "text-ink/55 hover:bg-[#eff5f2]"
                   }`}
                 >
                   Habitatindikatoren & Umwelt-Praediktoren
@@ -1091,7 +1012,7 @@ export default function ResultsPage() {
 
               {sourceTab === "evidenz" ? (
                 <div className="space-y-3">
-                  <div className="rounded-2xl border border-slate-200 p-4">
+                  <div className="rounded-2xl app-glass-panel p-4">
                     <p className="text-base font-semibold text-ink">Quellen</p>
                     <p className="mt-1 text-sm font-semibold text-[#2f7f75]">LANUK</p>
                     <div className="mt-2 space-y-2">
@@ -1117,24 +1038,24 @@ export default function ResultsPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-200 p-4">
+                  <div className="rounded-2xl app-glass-panel p-4">
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-base font-semibold text-ink">Scoring</p>
                       <p className="text-[1.02rem] font-semibold text-emerald-600">{sourceDetail.source.score}</p>
                     </div>
-                    <p className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[0.95rem] leading-relaxed text-ink/70">
+                    <p className="mt-3 rounded-xl app-glass-panel px-4 py-3 text-[0.95rem] leading-relaxed text-ink/70">
                       {sourceDetail.source.scoreText}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-200 p-4">
+                  <div className="rounded-2xl app-glass-panel p-4">
                     <p className="text-base font-semibold text-ink">Hinweise</p>
                     <div className="mt-3 space-y-2">
-                      <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      <div className="rounded-xl app-glass-panel px-4 py-3">
                         <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink/45">Regulatorische Einheit</p>
                         <p className="mt-1 text-[0.95rem] text-ink/80">{sourceDetail.source.regulatoryUnit}</p>
                       </div>
-                      <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      <div className="rounded-xl app-glass-panel px-4 py-3">
                         <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink/45">Quelle</p>
                         <p className="mt-1 text-[0.95rem] text-ink/80">{sourceDetail.source.legalSource}</p>
                       </div>
@@ -1142,7 +1063,7 @@ export default function ResultsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-slate-200 p-4">
+                <div className="rounded-2xl app-glass-panel p-4">
                   <p className="text-base font-semibold text-ink">Raeumliche Habitateignung (modellbasiert)</p>
                   <div className="mt-3 space-y-3 text-[0.95rem] leading-relaxed text-ink/75">
                     {sourceDetail.source.habitatEntries.map((entry) => (
@@ -1158,7 +1079,6 @@ export default function ResultsPage() {
           </div>
         </div>
       ) : null}
-      </div>
     </div>
   );
 }
