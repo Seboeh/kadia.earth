@@ -38,11 +38,6 @@ Frühe Klarheit, belastbare Entscheidungsgrundlagen und konsistente Berichterste
 - Visualisierung relevanter Umweltfaktoren
 - Kontextbezogene Bewertung
 
-### ✅ KI-gestützte Arten- & Habitatmodellierung
-- Habitatpotenzialanalysen
-- Methodisch validierte Prognosemodelle
-- Unterstützung vor vertiefenden Prüfungen
-
 ### ✅ Bericht & Dokumentation per Klick
 - Standardisierte Berichte
 - Exportierbar & nachvollziehbar
