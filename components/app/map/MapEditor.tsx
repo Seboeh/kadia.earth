@@ -39,117 +39,158 @@ type FocusTarget = { lat: number; lng: number } | null;
 
 const WIRKFAKTOR_GROUPS = [
   {
-    section: "planung",
-    title: "Planungsvorhaben",
-    items: [
-      "Bebauungsplan §30 BauGB (Wohngebiet, Gewerbegebiet, Mischgebiet)",
-      "Flächennutzungsplan (FNP)",
-      "Innenbaugebiete (Änderung/Umbau bestehender B-Pläne)",
-      "Außenbereichsvorhaben §35 BauGB",
-      "Vorhabenplanverfahren §32 BauGB"
-    ]
-  },
-  {
-    section: "bau",
     title: "Wohnen",
     items: [
-      "Einfamilienhaus / Reihenhaus",
-      "Mehrfamilienhaus / Wohnanlage",
-      "Garage / Carport / Parkplatz",
-      "Wohngebäude-Sanierung/Dachstuhl (Bestand)"
+      "Einfamilienhaus",
+      "Reihenhaus",
+      "Mehrfamilienhaus",
+      "Wohnanlage",
+      "Quartier",
+      "Garage",
+      "Carport",
+      "Tiefgarage",
+      "Parkhaus",
+      "Wohnsanierung",
+      "Wohnneubau modular"
     ]
   },
   {
-    section: "bau",
     title: "Gewerbe & Industrie",
     items: [
-      "Gewerbegebäude / Bürogebäude",
-      "Produktions-/Lagerhalle",
-      "Einzelhandel / Supermarkt / Ladenbau",
-      "Logistikzentrum / Hochregallager"
+      "Gewerbegebäude",
+      "Bürogebäude",
+      "Open Space",
+      "Produktionshalle",
+      "Lagerhalle",
+      "Logistikzentrum",
+      "Hochregallager",
+      "Distributionszentrum",
+      "Einzelhandel",
+      "Supermarkt",
+      "Ladenbau",
+      "Retail Park",
+      "Große Produktionshalle"
     ]
   },
   {
-    section: "bau",
     title: "Öffentliche Bauten",
     items: [
-      "Schule / Kindergarten / Universitätsgebäude",
-      "Sporthalle / Schwimmbad / Stadion",
-      "Verwaltungsgebäude / Rathaus / Klinik",
-      "Feuerwache / Polizeistation"
+      "Schule",
+      "Kindergarten",
+      "Universitätsgebäude",
+      "Sporthalle",
+      "Schwimmbad",
+      "Stadion",
+      "Feuerwehrhaus",
+      "Verwaltungsgebäude",
+      "Rathaus",
+      "Klinik",
+      "Polizeistation"
     ]
   },
   {
-    section: "bau",
     title: "Infrastruktur",
     items: [
-      "Straßenbau / Erweiterung / Umgehungsstraße",
-      "Rad-/Fußwege / Bürgersteig",
-      "Brücken-/Tunnelbau",
-      "Kanalisation / Entwässerung / Kläranlage",
-      "Strom-/Gas-/Wasserleitungen (KfW)",
-      "Mobilfunkmast / Strommast / Freileitung"
+      "Straßenbau",
+      "Straßen Erweiterung",
+      "Umgehungsstraße",
+      "Radweg",
+      "Fußweg",
+      "Bürgersteig",
+      "Brückenbau",
+      "Tunnelbau",
+      "Kanalisation",
+      "Entwässerung",
+      "Kläranlage",
+      "Stromleitungen",
+      "Gasleitungen",
+      "Wasserleitungen",
+      "Mobilfunkmast",
+      "Strommast",
+      "Freileitung"
     ]
   },
   {
-    section: "bau",
     title: "Energie & Freiflächen",
     items: [
-      "Windkraftanlage (Onshore/Offshore)",
-      "Freiflächen-PV-Anlage / Solarpark",
-      "Biogasanlage / Biomassekraftwerk",
-      "Umspannwerk / Trafostation"
+      "Windkraftanlage Onshore",
+      "Freiflächen PV Anlage",
+      "Solarpark",
+      "Biogasanlage",
+      "Biomassekraftwerk",
+      "H2 Elektrolyseur",
+      "Umspannwerk",
+      "Trafostation",
+      "Energiespeicher"
     ]
   },
   {
-    section: "bau",
     title: "Freizeit & Grünflächen",
     items: [
-      "Sportplatz / Bolzplatz / Tennisanlage",
+      "Sportplatz",
+      "Bolzplatz",
+      "Tennisanlage",
       "Friedhofserweiterung",
-      "Campingplatz / Wochenendhaus-Anlage",
-      "Kleingartenanlage / Schrebergarten",
-      "Spielplatz / Fitnesspark"
+      "Campingplatz",
+      "Wochenendhausanlage",
+      "Kleingartenanlage",
+      "Schrebergarten",
+      "Spielplatz",
+      "Fitnesspark",
+      "Urbanes Grün"
     ]
   },
   {
-    section: "bau",
     title: "Geländeeingriffe",
     items: [
-      "Wald-/Baumrodung (ohne Bau)",
-      "Freiflächenrodung (Grünland/Äcker)",
-      "Gewässerregulierung / Uferbefestigung",
-      "Kies-/Sand-/Torfabbau / Steinbruch",
-      "Geländemodellierung / Erdaushub / Sprengung"
+      "Waldrodung",
+      "Baumrodung",
+      "Flächenrodung",
+      "Gewässerregulierung",
+      "Uferbefestigung",
+      "Kiesabbau",
+      "Sandabbau",
+      "Torfabbau",
+      "Steinbruch",
+      "Geländemodellierung",
+      "Erdaushub",
+      "Sprengung"
     ]
   },
   {
-    section: "bau",
     title: "Anlagenbetrieb",
     items: [
-      "Industrie-/Gewerbeanlagen §4 BImSchG",
-      "Deponie / Abfalllager / Recyclinghof",
-      "Landwirtschaft (Stallbau, Silage, Bewässerung)",
-      "Forstbetrieb (Holzernte, Kahlschlag)"
+      "Industrieanlage",
+      "Gewerbeanlage",
+      "Deponie",
+      "Abfalllager",
+      "Recyclinghof",
+      "Landwirtschaft Stall",
+      "Landwirtschaft Silage",
+      "Landwirtschaft Bewässerung",
+      "Forstbetrieb Holzernte",
+      "Forstbetrieb Kahlschlag"
     ]
   },
   {
-    section: "bau",
     title: "Sonstige Vorhaben",
     items: [
-      "Abriss/Rückbau von Gebäuden",
-      "Stilllegung/Ruhestellung von Anlagen",
-      "Zaun/Mauer/Lärmschutzwand",
-      "Brunnen/Teichanlage/Wasserspiel",
-      "Freizeit-/Wasserpark / Tierpark",
-      "Temporäre Nutzung (Baustelle, Eventgelände)"
+      "Abriss",
+      "Rückbau",
+      "Stilllegung",
+      "Ruhestellung",
+      "Zaunbau",
+      "Mauerbau",
+      "Lärmschutzwand",
+      "Brunnenbau",
+      "Teichanlage",
+      "Wasserspiel",
+      "Freizeitpark",
+      "Wasserpark",
+      "Tierpark",
+      "Temporäre Nutzung"
     ]
   }
-] as const;
-
-const MAIN_MEASURE_SECTIONS = [
-  { id: "planung", label: "Planungsvorhaben" },
-  { id: "bau", label: "Bauvorhaben" }
 ] as const;
 
 const ANALYSIS_STEPS = [
@@ -290,7 +331,7 @@ export function MapEditor() {
   const [completedSteps, setCompletedSteps] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
   const [selectedWirkfaktoren, setSelectedWirkfaktoren] = useState<string[]>([]);
-  const [activeMainSection, setActiveMainSection] = useState<(typeof MAIN_MEASURE_SECTIONS)[number]["id"]>("planung");
+  const [measureSearch, setMeasureSearch] = useState("");
   const [activeMeasureCategory, setActiveMeasureCategory] = useState<
     (typeof WIRKFAKTOR_GROUPS)[number]["title"] | null
   >(null);
@@ -299,10 +340,7 @@ export function MapEditor() {
 
   const hasGeometry = useMemo(() => Boolean(polygon), [polygon]);
   const canStartScreening = hasGeometry && selectedWirkfaktoren.length > 0;
-  const categoryGroups = useMemo(
-    () => WIRKFAKTOR_GROUPS.filter((group) => group.section === activeMainSection),
-    [activeMainSection]
-  );
+  const categoryGroups = WIRKFAKTOR_GROUPS;
   const measureCountByCategory = useMemo(() => {
     return Object.fromEntries(
       WIRKFAKTOR_GROUPS.map((group) => [
@@ -311,22 +349,25 @@ export function MapEditor() {
       ])
     ) as Record<string, number>;
   }, [selectedWirkfaktoren]);
-  const measureCountBySection = useMemo(() => {
-    return Object.fromEntries(
-      MAIN_MEASURE_SECTIONS.map((section) => [
-        section.id,
-        WIRKFAKTOR_GROUPS
-          .filter((group) => group.section === section.id)
-          .flatMap((group) => group.items)
-          .filter((item) => selectedWirkfaktoren.includes(item)).length
-      ])
-    ) as Record<(typeof MAIN_MEASURE_SECTIONS)[number]["id"], number>;
-  }, [selectedWirkfaktoren]);
   const activeGroup = useMemo(
     () => categoryGroups.find((group) => group.title === activeMeasureCategory) ?? null,
     [activeMeasureCategory, categoryGroups]
   );
-
+  const measureSearchMatch = useMemo(() => {
+    const query = measureSearch.trim().toLowerCase();
+    if (!query) return null;
+    return (
+      WIRKFAKTOR_GROUPS.find((group) =>
+        group.items.some((item) => item.toLowerCase().includes(query))
+      ) ?? null
+    );
+  }, [measureSearch]);
+  const filteredMeasures = useMemo(() => {
+    if (!activeGroup) return [];
+    const query = measureSearch.trim().toLowerCase();
+    if (!query) return activeGroup.items;
+    return activeGroup.items.filter((item) => item.toLowerCase().includes(query));
+  }, [activeGroup, measureSearch]);
   const clearAnalysisTimers = () => {
     analysisTimersRef.current.forEach((timerId) => window.clearTimeout(timerId));
     analysisTimersRef.current = [];
@@ -345,6 +386,13 @@ export function MapEditor() {
       setActiveMeasureCategory(null);
     }
   }, [activeMeasureCategory, categoryGroups]);
+
+  useEffect(() => {
+    if (!measureSearchMatch) return;
+    if (activeMeasureCategory !== measureSearchMatch.title) {
+      setActiveMeasureCategory(measureSearchMatch.title);
+    }
+  }, [activeMeasureCategory, measureSearchMatch]);
 
   const toggleWirkfaktor = (factor: string) => {
     setSelectedWirkfaktoren((current) =>
@@ -521,127 +569,76 @@ export function MapEditor() {
           </div>
         </div>
 
-        <div className="space-y-3">
-          <div className="rounded-2xl border border-[#e5e7eb] bg-white p-3.5">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#f3f4f6] text-xs font-semibold text-[#4b5563]">
-                1
-              </span>
-              <p className="text-sm font-semibold text-[#3a372e]">Bereich wählen</p>
+        <div className="space-y-4">
+          <div className="rounded-2xl bg-white p-4 shadow-[0_5px_16px_rgba(15,23,42,0.05)]">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-base font-semibold text-[#2b352f]">Maßnahme suchen</p>
+              <p className="text-xs text-ink/55">Öffnet automatisch die passende Kategorie</p>
             </div>
-            <div>
-              <div
-                role="tablist"
-                aria-label="Maßnahmen-Hauptkategorien"
-                className="flex flex-wrap items-center gap-2 rounded-2xl border border-[#e5e7eb] bg-white p-1"
-              >
-                {MAIN_MEASURE_SECTIONS.map((section) => {
-                  const isActive = section.id === activeMainSection;
-                  const selectedCount = measureCountBySection[section.id] ?? 0;
-                  return (
-                    <button
-                      key={section.id}
-                      id={`measures-main-tab-${section.id}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      aria-controls={`measures-main-panel-${section.id}`}
-                      onClick={() => {
-                        setActiveMainSection(section.id);
-                        setActiveMeasureCategory(null);
-                      }}
-                      className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition ${
-                        isActive
-                          ? "bg-[#F7E7A6] text-ink shadow-[0_8px_20px_rgba(247,231,166,0.35)]"
-                          : "text-[#4c4a41] hover:bg-[#f8fafc]"
-                      }`}
-                    >
-                      <span>{section.label}</span>
-                      <span
-                        className={`inline-flex min-w-6 items-center justify-center rounded-full px-1.5 py-0.5 text-[11px] leading-none ${
-                          isActive
-                            ? "bg-white/45 text-[#6b4b0f]"
-                            : "bg-[#e5e7eb] text-[#6b7280]"
-                        }`}
-                      >
-                        {selectedCount}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/45" />
+              <Input
+                value={measureSearch}
+                onChange={(event) => setMeasureSearch(event.target.value)}
+                placeholder="z. B. Windkraftanlage, Straßenbau, Rückbau"
+                className="h-10 rounded-xl border-[#e6eaf0] bg-white pl-9 focus-visible:border-[#e7cf7a] focus-visible:ring-[#F7E7A6]/55"
+              />
             </div>
+            {measureSearch.trim().length > 0 && !measureSearchMatch ? (
+              <p className="mt-2 text-xs text-ink/55">Keine passende Maßnahme gefunden.</p>
+            ) : null}
           </div>
 
-          <div className="rounded-2xl border border-[#e5e7eb] bg-white p-3.5">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#f3f4f6] text-xs font-semibold text-[#4b5563]">
-                2
-              </span>
-              <p className="text-sm font-semibold text-[#3a372e]">Kategorie wählen</p>
+          <div className="rounded-2xl bg-white p-4 shadow-[0_5px_16px_rgba(15,23,42,0.05)]">
+            <div className="mb-3">
+              <p className="text-base font-semibold text-[#2b352f]">1. Kategorie wählen</p>
             </div>
-            <div>
-              <div
-                role="tablist"
-                aria-label="Maßnahmen-Kategorien"
-                className="flex flex-wrap items-center gap-2 rounded-2xl border border-[#e5e7eb] bg-white p-1"
-              >
-                {categoryGroups.map((group) => {
-                  const isActive = group.title === activeMeasureCategory;
-                  const categoryId = toCategoryId(group.title);
-                  const selectedCount = measureCountByCategory[group.title] ?? 0;
-                  return (
-                    <button
-                      key={group.title}
-                      id={`measures-tab-${categoryId}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      aria-controls={`measures-panel-${categoryId}`}
-                      onClick={() => setActiveMeasureCategory(group.title)}
-                      className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition ${
-                        isActive
-                          ? "bg-[#F7E7A6] text-ink shadow-[0_8px_20px_rgba(247,231,166,0.35)]"
-                          : "text-[#4c4a41] hover:bg-[#f8fafc]"
-                      }`}
-                    >
-                      <span>{group.title}</span>
-                      <span
-                        className={`inline-flex min-w-6 items-center justify-center rounded-full px-1.5 py-0.5 text-[11px] leading-none ${
-                          isActive
-                            ? "bg-white/45 text-[#6b4b0f]"
-                            : "bg-[#e5e7eb] text-[#6b7280]"
-                        }`}
-                      >
-                        {selectedCount}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+            <div role="tablist" aria-label="Maßnahmen-Kategorien" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {categoryGroups.map((group) => {
+                const isActive = group.title === activeMeasureCategory;
+                const categoryId = toCategoryId(group.title);
+                const selectedCount = measureCountByCategory[group.title] ?? 0;
+                return (
+                  <button
+                    key={group.title}
+                    id={`measures-tab-${categoryId}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`measures-panel-${categoryId}`}
+                    onClick={() => setActiveMeasureCategory(group.title)}
+                    className={`rounded-2xl border px-4 py-3 text-left transition ${
+                      isActive
+                        ? "border-[#e7cf7a] bg-[#fff8dc] shadow-[0_8px_18px_rgba(247,231,166,0.35)]"
+                        : "border-[#e6eaf0] bg-[#fafbfc] hover:border-[#cfd8e3]"
+                    }`}
+                  >
+                    <p className={`text-sm font-semibold ${isActive ? "text-[#6b4b0f]" : "text-[#394450]"}`}>{group.title}</p>
+                    <p className="mt-1 text-xs text-ink/55">{selectedCount} ausgewählt</p>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           <div
-            id={`measures-main-panel-${activeMainSection}`}
+            id="measures-main-panel"
             role="tabpanel"
-            aria-labelledby={`measures-main-tab-${activeMainSection}`}
-            className="rounded-2xl border border-[#e5e7eb] bg-white p-4"
+            aria-labelledby={activeMeasureCategory ? `measures-tab-${toCategoryId(activeMeasureCategory)}` : undefined}
+            className={`rounded-2xl p-4 shadow-[0_5px_16px_rgba(15,23,42,0.05)] ${activeGroup ? "bg-white" : "bg-[#f8fafc]"}`}
           >
-            <div className="mb-2 flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#f3f4f6] text-xs font-semibold text-[#4b5563]">
-                3
-              </span>
-              <p className="text-sm font-semibold text-[#3a372e]">Maßnahmen auswählen</p>
+            <div className="mb-3">
+              <p className="text-base font-semibold text-[#2b352f]">2. Maßnahmen auswählen</p>
             </div>
             {activeGroup ? (
               <div
                 id={`measures-panel-${toCategoryId(activeGroup.title)}`}
                 role="tabpanel"
                 aria-labelledby={`measures-tab-${toCategoryId(activeGroup.title)}`}
+                className="space-y-3"
               >
-                <div className="flex flex-wrap gap-2.5">
-                  {activeGroup.items.map((item) => {
+                <div className="grid gap-2.5 md:grid-cols-2">
+                  {filteredMeasures.map((item) => {
                     const checked = selectedWirkfaktoren.includes(item);
                     return (
                       <button
@@ -649,49 +646,77 @@ export function MapEditor() {
                         type="button"
                         onClick={() => toggleWirkfaktor(item)}
                         aria-pressed={checked}
-                        className={`rounded-full border px-3.5 py-2 text-sm transition ${
+                        className={`relative rounded-2xl border px-4 py-3 text-left transition ${
                           checked
-                            ? "border-[#e7cf7a] bg-[#F7E7A6] text-ink shadow-[0_10px_24px_rgba(247,231,166,0.35)]"
-                            : "border-[#e5e7eb] bg-white text-[#3a372e] hover:border-[#d1d5db] hover:bg-[#f8fafc]"
+                            ? "border-[#e7cf7a] bg-[#fff8dc] shadow-[0_6px_14px_rgba(247,231,166,0.30)]"
+                            : "border-[#e6eaf0] bg-white hover:border-[#cfd8e3]"
                         }`}
                       >
-                        {item}
+                        {checked ? (
+                          <span className="absolute right-2.5 top-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#f7e7a6] text-[11px] font-semibold text-[#6b4b0f]">
+                            x
+                          </span>
+                        ) : null}
+                        <div className="flex items-start gap-3">
+                          <span className={`mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded border ${checked ? "border-[#F2DC93] bg-[#F2DC93]" : "border-[#b6c2d0] bg-white"}`}>
+                            {checked ? <span className="h-1.5 w-1.5 rounded-full bg-white" /> : null}
+                          </span>
+                          <div>
+                            <p className={`text-sm font-medium ${checked ? "text-[#6b4b0f]" : "text-[#334155]"}`}>{item}</p>
+                          </div>
+                        </div>
                       </button>
                     );
                   })}
                 </div>
+                {filteredMeasures.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-[#d4dbe5] bg-[#fafbfc] px-4 py-6 text-sm text-ink/60">
+                    Keine Maßnahme zum Suchbegriff gefunden.
+                  </div>
+                ) : null}
               </div>
             ) : (
-              <p className="text-sm text-ink/60">Bitte zuerst in Schritt 2 eine Kategorie auswählen.</p>
+              <div className="rounded-xl border border-dashed border-[#d4dbe5] bg-[#fafbfc] px-4 py-6 text-sm text-ink/60">
+                Bitte zuerst in Schritt 1 eine Kategorie auswählen.
+              </div>
             )}
           </div>
 
-          <div className="rounded-2xl border border-[#e5e7eb] bg-white p-3.5">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#f3f4f6] text-xs font-semibold text-[#4b5563]">
-                4
-              </span>
-              <p className="text-sm font-semibold text-[#3a372e]">
-                Ausgewählte Maßnahmen ({selectedWirkfaktoren.length})
-              </p>
+          <div className="rounded-2xl bg-white p-4 shadow-[0_5px_16px_rgba(15,23,42,0.05)]">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-base font-semibold text-[#2b352f]">3. Ausgewählte Maßnahmen</p>
+              <p className="text-xs text-ink/55">{selectedWirkfaktoren.length} insgesamt</p>
             </div>
             {selectedWirkfaktoren.length > 0 ? (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {selectedWirkfaktoren.map((item) => (
+              <div className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  {selectedWirkfaktoren.map((item) => (
+                    <button
+                      key={`selected-${item}`}
+                      type="button"
+                      onClick={() => toggleWirkfaktor(item)}
+                      className="relative inline-flex items-center rounded-full border border-[#eadca8] bg-[#fff8dc] pl-3 pr-7 py-1.5 text-xs text-[#6b4b0f] transition hover:border-[#dfcd88] hover:bg-[#fff3cd]"
+                      aria-label={`${item} entfernen`}
+                    >
+                      <span>{item}</span>
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-[#8a6a17]">x</span>
+                    </button>
+                  ))}
+                </div>
+                <div>
                   <button
-                    key={`selected-${item}`}
                     type="button"
-                    onClick={() => toggleWirkfaktor(item)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#e5e7eb] bg-white px-3 py-1.5 text-xs text-[#3a372e] transition hover:border-[#d1d5db] hover:bg-[#f8fafc]"
-                    aria-label={`${item} entfernen`}
+                    onClick={() => setSelectedWirkfaktoren([])}
+                    className="rounded-xl border border-[#e6eaf0] bg-white px-3 py-1.5 text-xs font-medium text-ink/70 transition hover:bg-[#f8fafc]"
                   >
-                    <span>{item}</span>
-                    <span className="text-[#6b7280]">×</span>
+                    Alle entfernen
                   </button>
-                ))}
+                </div>
               </div>
             ) : (
-              <p className="mt-1 text-sm text-ink/55">Noch keine Maßnahme ausgewählt.</p>
+              <div className="rounded-xl border border-dashed border-[#d4dbe5] bg-[#fafbfc] px-4 py-6 text-sm text-ink/60">
+                Noch keine Maßnahme ausgewählt. Wählen Sie in Schritt 2 passende Maßnahmen aus.
+              </div>
             )}
           </div>
         </div>
@@ -715,7 +740,7 @@ export function MapEditor() {
               canStartScreening ? "bg-[#F7E7A6] hover:bg-[#F2DC93]" : "bg-[#e5e7eb] text-[#9ca3af]"
             }`}
           >
-            Screening starten
+            Analyse starten
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
@@ -729,7 +754,7 @@ export function MapEditor() {
                 <span className="pointer-events-none absolute inset-[3px] rounded-full border border-white/70" />
                 <Hourglass className="relative h-8 w-8 text-[#F2DC93] drop-shadow-[0_1px_1px_rgba(0,0,0,0.12)] animate-[spin_1.8s_ease-in-out_infinite]" />
               </div>
-              <h3 className="mt-3 text-2xl font-semibold tracking-[-0.01em] text-[#3a372e]">Artenschutzanalyse wird durchgeführt</h3>
+              <h3 className="mt-3 text-2xl font-light tracking-[-0.005em] text-[#3a372e]">Artenschutzanalyse wird durchgeführt</h3>
             </div>
 
             <div className="mt-6 space-y-3">

@@ -22,7 +22,7 @@ export function AppGridBackground() {
     };
   }, [mouseX, mouseY]);
 
-  const spotlight = useMotionTemplate`radial-gradient(280px at ${mouseX}px ${mouseY}px, rgba(10, 10, 10, 0.45), transparent 72%)`;
+  const spotlight = useMotionTemplate`radial-gradient(320px at ${mouseX}px ${mouseY}px, rgba(0, 0, 0, 0.32), transparent 74%)`;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0">
@@ -31,15 +31,15 @@ export function AppGridBackground() {
         className="absolute inset-0 opacity-26"
         style={{
           backgroundImage:
-            "radial-gradient(circle, rgba(46,92,85,0.18) 1.1px, transparent 1.2px)",
+            "radial-gradient(circle, rgba(148,163,184,0.18) 1.1px, transparent 1.2px)",
           backgroundSize: "18px 18px"
         }}
       />
       <motion.div
-        className="absolute inset-0 opacity-92"
+        className="absolute inset-0 opacity-70"
         style={{
           backgroundImage:
-            "radial-gradient(circle, rgba(46,92,85,0.48) 1.3px, transparent 1.4px)",
+            "radial-gradient(circle, rgba(35,35,35,0.42) 1.3px, transparent 1.4px)",
           backgroundSize: "18px 18px",
           WebkitMaskImage: spotlight,
           maskImage: spotlight

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, ChevronDown, CircleHelp, CreditCard, LogOut, Settings, ShieldCheck, UserCircle2 } from "lucide-react";
+import { Bell, ChevronDown, CircleHelp, CreditCard, Download, LogOut, Plus, Settings, ShieldCheck, UserCircle2 } from "lucide-react";
 import { AppGridBackground } from "@/components/app/background/AppGridBackground";
 
 export default function AppAreaLayout({
@@ -25,16 +25,30 @@ export default function AppAreaLayout({
             </Link>
 
             <div className="flex items-center gap-2">
+              <Link
+                href="/app?new=1"
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-[#e7cf7a] bg-[#F7E7A6] px-3.5 py-2 text-xs font-semibold tracking-[0.02em] text-ink shadow-[0_8px_20px_rgba(247,231,166,0.32)] transition hover:bg-[#F2DC93]"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Neue Analyse
+              </Link>
+              <Link
+                href="/app/report"
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/50 px-3.5 py-2 text-xs font-semibold tracking-[0.02em] text-ink shadow-[0_4px_14px_rgba(17,24,39,0.08),inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-xl transition hover:bg-white/62"
+              >
+                <Download className="h-3.5 w-3.5" />
+                Export
+              </Link>
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/38 text-ink/80 shadow-[0_14px_34px_rgba(20,40,29,0.18),inset_0_1px_0_rgba(255,255,255,0.58)] backdrop-blur-xl transition hover:bg-white/46"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/34 text-ink/80 shadow-[0_4px_14px_rgba(17,24,39,0.08),inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-xl transition hover:bg-white/42"
                 aria-label="Benachrichtigungen"
               >
                 <Bell className="h-4 w-4" />
               </button>
 
               <details className="group relative">
-                <summary className="flex list-none cursor-pointer items-center gap-2 rounded-full border border-white/30 bg-white/40 px-2 py-1.5 shadow-[0_14px_34px_rgba(20,40,29,0.18),inset_0_1px_0_rgba(255,255,255,0.58)] backdrop-blur-xl transition hover:bg-white/50 [&::-webkit-details-marker]:hidden">
+                <summary className="flex list-none cursor-pointer items-center gap-2 rounded-full border border-white/30 bg-white/36 px-2 py-1.5 shadow-[0_4px_14px_rgba(17,24,39,0.08),inset_0_1px_0_rgba(255,255,255,0.55)] backdrop-blur-xl transition hover:bg-white/44 [&::-webkit-details-marker]:hidden">
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/55 bg-[#2E5C55]/16 text-xs font-semibold text-[#2E5C55]">
                     M
                   </span>

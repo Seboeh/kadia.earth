@@ -18,6 +18,7 @@ import {
   X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResultAreaMapClient } from "@/components/app/map/ResultAreaMapClient";
 import {
@@ -113,6 +114,15 @@ const speciesRows: SpeciesRow[] = [
     flaechenanteil: "5%"
   }
 ];
+
+const speciesWirkfaktoren: Record<string, string[]> = {
+  Feldlerche: ["Flächeninanspruchnahme", "Habitatverlust"],
+  Wachtel: ["Baufeldfreimachung", "Habitatverlust"],
+  Grasfrosch: ["Baufeldfreimachung", "Habitatverlust"],
+  "Rote Waldameise": ["Bäume fällen"],
+  Mauersegler: ["Lichtemissionen", "Habitatverlust"],
+  Hornisse: ["Bäume fällen"]
+};
 
 const habitatCategories = [
   {
@@ -496,11 +506,17 @@ function formatAnalysisTime(isoTimestamp: string) {
 
 export default function ResultsPage() {
   const [sessionData, setSessionData] = useState<ScreeningSessionData | null>(null);
+  const [speciesWidgetOpen, setSpeciesWidgetOpen] = useState(true);
+  const [habitatWidgetOpen, setHabitatWidgetOpen] = useState(true);
   const [speciesExpanded, setSpeciesExpanded] = useState(false);
   const [habitatExpanded, setHabitatExpanded] = useState(false);
   const [selectedCompensation, setSelectedCompensation] = useState<SpeciesRow | null>(null);
+  const [showCompensationHeatmap, setShowCompensationHeatmap] = useState(false);
   const [selectedSource, setSelectedSource] = useState<SpeciesRow | null>(null);
   const [sourceTab, setSourceTab] = useState<"evidenz" | "praediktoren">("evidenz");
+  const [speciesSearchQuery, setSpeciesSearchQuery] = useState("");
+  const [speciesFilterMode, setSpeciesFilterMode] = useState<"all" | "warning" | "ok">("all");
+  const [speciesSortMode, setSpeciesSortMode] = useState<"score_desc" | "name_asc">("score_desc");
 
   useEffect(() => {
     try {
@@ -534,7 +550,48 @@ export default function ResultsPage() {
     };
   }, [sessionData]);
 
-  const speciesRowsToRender = speciesExpanded ? speciesRows : speciesRows.slice(0, 4);
+  useEffect(() => {
+    setShowCompensationHeatmap(Boolean(selectedCompensation));
+  }, [selectedCompensation]);
+
+  const filteredSpeciesRows = useMemo(() => {
+    const query = speciesSearchQuery.trim().toLowerCase();
+    const byFilter = speciesRows.filter((row) => {
+      if (speciesFilterMode === "warning") return row.pruefTone === "warning";
+      if (speciesFilterMode === "ok") return row.pruefTone === "ok";
+      return true;
+    });
+
+    const bySearch = byFilter.filter((row) => {
+      if (!query) return true;
+      return (
+        row.art.toLowerCase().includes(query) ||
+        row.latin.toLowerCase().includes(query) ||
+        row.tag.toLowerCase().includes(query)
+      );
+    });
+
+    const parsePercent = (value: string) => {
+      const numeric = Number.parseFloat(value.replace("%", "").trim());
+      return Number.isFinite(numeric) ? numeric : 0;
+    };
+
+    return [...bySearch].sort((a, b) => {
+      if (speciesSortMode === "name_asc") {
+        return a.art.localeCompare(b.art, "de");
+      }
+      return parsePercent(b.flaechenanteil) - parsePercent(a.flaechenanteil);
+    });
+  }, [speciesFilterMode, speciesSearchQuery, speciesSortMode]);
+
+  const speciesRowsToRender = speciesExpanded ? filteredSpeciesRows : filteredSpeciesRows.slice(0, 4);
+  const hasSpeciesFilters = speciesSearchQuery.trim().length > 0 || speciesFilterMode !== "all" || speciesSortMode !== "score_desc";
+  const speciesFilterLabel =
+    speciesFilterMode === "warning"
+      ? "Filter: Lokale Massnahmen"
+      : speciesFilterMode === "ok"
+        ? "Filter: Nicht pruefrelevant"
+        : "Filter: Alle";
   const habitatGroupsPreview = useMemo(() => {
     const climate = habitatCategories[0];
     const topography = habitatCategories[1];
@@ -584,7 +641,7 @@ export default function ResultsPage() {
         <CardContent className="space-y-4">
           <div className="rounded-2xl app-glass-panel px-5 py-4">
             <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
-              <MapPinned className="h-5 w-5 text-[#1f8f82]" />
+              <MapPinned className="h-5 w-5 text-[#2E5C55]" />
               Gemeinde / Stadt
             </p>
             <p className="mt-3 pt-1 text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.location}</p>
@@ -593,28 +650,28 @@ export default function ResultsPage() {
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-2xl app-glass-panel px-5 py-4">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
-                <Ruler className="h-5 w-5 text-[#1f8f82]" />
+                <Ruler className="h-5 w-5 text-[#2E5C55]" />
                 Flaeche
               </p>
               <p className="mt-3 pt-1 text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.area}</p>
             </div>
             <div className="rounded-2xl app-glass-panel px-5 py-4">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
-                <LocateFixed className="h-5 w-5 text-[#1f8f82]" />
+                <LocateFixed className="h-5 w-5 text-[#2E5C55]" />
                 Koordinaten
               </p>
               <p className="mt-3 pt-1 whitespace-nowrap text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.coordinates}</p>
             </div>
             <div className="rounded-2xl app-glass-panel px-5 py-4">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
-                <CalendarClock className="h-5 w-5 text-[#1f8f82]" />
+                <CalendarClock className="h-5 w-5 text-[#2E5C55]" />
                 Analysezeitraum
               </p>
               <p className="mt-3 pt-1 text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.analysisTime}</p>
             </div>
             <div className="rounded-2xl app-glass-panel px-5 py-4">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
-                <Hash className="h-5 w-5 text-[#1f8f82]" />
+                <Hash className="h-5 w-5 text-[#2E5C55]" />
                 Analyse-ID
               </p>
               <p className="mt-3 pt-1 whitespace-nowrap text-[1.02rem] font-light leading-tight text-ink/80">{projectInformation.analysisId}</p>
@@ -624,13 +681,29 @@ export default function ResultsPage() {
           <div className="rounded-2xl app-glass-panel px-5 py-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="flex items-center gap-2 text-[1.02rem] font-medium leading-none text-ink/95">
-                <AlertTriangle className="h-5 w-5 text-[#1f8f82]" />
+                <AlertTriangle className="h-5 w-5 text-[#2E5C55]" />
                 Gesamtstatus
               </p>
-              <span className="mt-1 inline-flex items-center gap-2 self-center rounded-full bg-yellow-100 px-4 py-1.5 text-sm font-semibold text-yellow-700">
-                <span className="h-2.5 w-2.5 rounded-full bg-yellow-500" aria-hidden="true" />
-                Relevanz: Mittel
-              </span>
+              <div className="group relative z-[1200] mt-1 self-center isolate">
+                <span className="inline-flex items-center gap-2 rounded-full bg-yellow-100 px-4 py-1.5 text-sm font-semibold text-yellow-700 ring-1 ring-yellow-200/80">
+                  <span className="h-2.5 w-2.5 rounded-full bg-yellow-500" aria-hidden="true" />
+                  Relevanz: Mittel
+                </span>
+                <div className="pointer-events-none absolute bottom-full right-0 z-[1300] mb-2 hidden w-[360px] rounded-2xl border border-slate-200/90 bg-white/98 p-4 shadow-[0_14px_30px_rgba(15,23,42,0.14)] backdrop-blur-sm group-hover:block group-focus-within:block">
+                  <p className="mb-3 text-sm font-semibold tracking-[-0.01em] text-ink/90">Relevanzstufen</p>
+                  <div className="space-y-2.5 text-[0.82rem] leading-relaxed text-ink/78">
+                    <div className="rounded-lg border border-emerald-100 bg-emerald-50/45 px-3 py-2">
+                      <p><span className="font-semibold text-emerald-700">🟢 Grün:</span> unproblematisch, keine weiteren artenschutzrechtlichen Maßnahmen nötig.</p>
+                    </div>
+                    <div className="rounded-lg border border-yellow-100 bg-yellow-50/55 px-3 py-2">
+                      <p><span className="font-semibold text-yellow-700">🟡 Gelb:</span> umsetzbar mit üblichen Kompensations- und Schutzmaßnahmen.</p>
+                    </div>
+                    <div className="rounded-lg border border-rose-100 bg-rose-50/45 px-3 py-2">
+                      <p><span className="font-semibold text-rose-700">🔴 Rot:</span> ASP II / Vor-Ort-Prüfung erforderlich, erhöhtes Genehmigungsrisiko.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="mt-4 w-full max-w-none">
               <p className="w-full max-w-none text-[1.02rem] font-semibold leading-tight text-ink/95">
@@ -661,14 +734,20 @@ export default function ResultsPage() {
         <Card className="overflow-hidden app-glass-card rounded-[24px]">
           <CardHeader className="border-b border-slate-200/70 px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="flex items-center gap-2 text-[0.98rem] font-semibold text-ink/95">
-                {speciesExpanded ? (
+              <button
+                type="button"
+                onClick={() => setSpeciesWidgetOpen((current) => !current)}
+                className="flex items-center gap-2 text-[0.98rem] font-semibold text-ink/95"
+                aria-label={speciesWidgetOpen ? "Artenliste einklappen" : "Artenliste ausklappen"}
+                aria-expanded={speciesWidgetOpen}
+              >
+                {speciesWidgetOpen ? (
                   <ChevronUp className="h-4 w-4 text-ink/80" />
                 ) : (
                   <ChevronDown className="h-4 w-4 text-ink/80" />
                 )}
                 Artenliste
-              </p>
+              </button>
               <button
                 type="button"
                 className="inline-flex items-center gap-2 rounded-xl app-glass-panel px-3 py-1.5 text-sm font-medium text-ink/90 transition hover:bg-white/80"
@@ -679,26 +758,41 @@ export default function ResultsPage() {
             </div>
           </CardHeader>
 
+          {speciesWidgetOpen ? (
           <CardContent className="px-0 pb-0">
             <div className="border-b border-slate-200/70 px-4 py-3">
               <div className="grid gap-3 md:grid-cols-[minmax(240px,1fr)_auto_auto]">
                 <div className="flex items-center gap-2 rounded-xl border border-slate-300/65 bg-white/55 px-3 py-2 text-sm text-ink/65">
                   <Search className="h-4 w-4" />
-                  Art suchen...
+                  <input
+                    type="text"
+                    value={speciesSearchQuery}
+                    onChange={(event) => setSpeciesSearchQuery(event.target.value)}
+                    placeholder="Art suchen..."
+                    className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink/55"
+                  />
                 </div>
                 <button
                   type="button"
+                  onClick={() =>
+                    setSpeciesFilterMode((current) =>
+                      current === "all" ? "warning" : current === "warning" ? "ok" : "all"
+                    )
+                  }
                   className="inline-flex items-center gap-2 rounded-xl border border-slate-300/65 bg-white/55 px-4 py-2 text-sm font-medium text-ink/90"
                 >
                   <Filter className="h-4 w-4" />
-                  Filter
+                  {speciesFilterLabel}
                   <ChevronDown className="h-4 w-4" />
                 </button>
                 <button
                   type="button"
+                  onClick={() =>
+                    setSpeciesSortMode((current) => (current === "score_desc" ? "name_asc" : "score_desc"))
+                  }
                   className="inline-flex items-center gap-2 rounded-xl border border-slate-300/65 bg-white/55 px-4 py-2 text-sm font-medium text-ink/90"
                 >
-                  Nach Score
+                  {speciesSortMode === "score_desc" ? "Nach Score" : "Nach Name"}
                   <ChevronDown className="h-4 w-4" />
                 </button>
               </div>
@@ -710,6 +804,7 @@ export default function ResultsPage() {
                   <tr className="border-b border-slate-200/80 text-[0.86rem] font-medium text-ink/65">
                     <th className="px-4 py-3">Art</th>
                     <th className="px-4 py-3">Pruefung</th>
+                    <th className="px-4 py-3">Wirkfaktoren</th>
                     <th className="px-4 py-3">Flaechenanteil</th>
                     <th className="px-4 py-3">Kompensation</th>
                     <th className="px-4 py-3">Quelle</th>
@@ -742,6 +837,18 @@ export default function ResultsPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 align-middle">
+                        <div className="flex flex-wrap gap-1.5">
+                          {(speciesWirkfaktoren[row.art] ?? []).map((faktor) => (
+                            <span
+                              key={`${row.art}-${faktor}`}
+                              className="inline-flex rounded-full bg-[#dbe8e5] px-2.5 py-[2px] text-[0.74rem] font-medium text-[#2E5C55]"
+                            >
+                              {faktor}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 align-middle">
                         <span className="inline-flex rounded-md bg-slate-100 px-2 py-[2px] text-[0.74rem] font-medium text-ink/90">
                           {row.flaechenanteil}
                         </span>
@@ -749,7 +856,10 @@ export default function ResultsPage() {
                       <td className="px-4 py-3 align-middle">
                         <button
                           type="button"
-                          onClick={() => setSelectedCompensation(row)}
+                          onClick={() => {
+                            setSelectedCompensation(row);
+                            setShowCompensationHeatmap(true);
+                          }}
                           className="rounded-xl app-glass-panel px-3.5 py-[3px] text-[0.74rem] font-medium text-ink/90 transition hover:text-[#1f8f82] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2E5C55]/35"
                         >
                           Info
@@ -773,21 +883,45 @@ export default function ResultsPage() {
                 </tbody>
               </table>
 
-              {!speciesExpanded ? (
+              {speciesRowsToRender.length === 0 ? (
+                <div className="px-4 py-6 text-sm text-ink/65">
+                  Keine Arten fuer die aktuelle Suche/Filter gefunden.
+                </div>
+              ) : null}
+
+              {!speciesExpanded && filteredSpeciesRows.length > 4 ? (
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white/95 via-white/70 to-transparent" />
               ) : null}
             </div>
-            <div className="flex justify-center px-4 py-3">
-              <button
-                type="button"
-                onClick={() => setSpeciesExpanded((current) => !current)}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-xl app-glass-panel text-ink/70"
-                aria-label={speciesExpanded ? "Artenliste einklappen" : "Artenliste ausklappen"}
-              >
-                {speciesExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </button>
-            </div>
+            {filteredSpeciesRows.length > 4 ? (
+              <div className="flex justify-center px-4 py-3">
+                <button
+                  type="button"
+                  onClick={() => setSpeciesExpanded((current) => !current)}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl app-glass-panel text-ink/70"
+                  aria-label={speciesExpanded ? "Artenliste einklappen" : "Artenliste ausklappen"}
+                >
+                  {speciesExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </button>
+              </div>
+            ) : hasSpeciesFilters ? (
+              <div className="flex justify-center px-4 py-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSpeciesSearchQuery("");
+                    setSpeciesFilterMode("all");
+                    setSpeciesSortMode("score_desc");
+                  }}
+                  className="inline-flex items-center gap-2 rounded-xl app-glass-panel px-3 py-1.5 text-xs font-medium text-ink/80 transition hover:bg-white/80"
+                >
+                  <X className="h-3.5 w-3.5" />
+                  Filter zuruecksetzen
+                </button>
+              </div>
+            ) : null}
           </CardContent>
+          ) : null}
         </Card>
       </div>
 
@@ -796,14 +930,20 @@ export default function ResultsPage() {
         <Card className="overflow-hidden app-glass-card rounded-[24px]">
           <CardHeader className="border-b border-slate-200/70 px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="flex items-center gap-2 text-[0.98rem] font-semibold text-ink/95">
-                {habitatExpanded ? (
+              <button
+                type="button"
+                onClick={() => setHabitatWidgetOpen((current) => !current)}
+                className="flex items-center gap-2 text-[0.98rem] font-semibold text-ink/95"
+                aria-label={habitatWidgetOpen ? "Habitatindikatoren einklappen" : "Habitatindikatoren ausklappen"}
+                aria-expanded={habitatWidgetOpen}
+              >
+                {habitatWidgetOpen ? (
                   <ChevronUp className="h-4 w-4 text-ink/80" />
                 ) : (
                   <ChevronDown className="h-4 w-4 text-ink/80" />
                 )}
                 Habitatindikatoren & Umwelt-Praediktoren
-              </p>
+              </button>
               <button
                 type="button"
                 className="inline-flex items-center gap-2 rounded-xl app-glass-panel px-3 py-1.5 text-sm font-medium text-ink/90 transition hover:bg-white/80"
@@ -814,6 +954,7 @@ export default function ResultsPage() {
             </div>
           </CardHeader>
 
+          {habitatWidgetOpen ? (
           <CardContent className="px-4 pb-3 pt-3">
             <div className="relative overflow-x-auto">
               <table className="min-w-full text-left">
@@ -856,7 +997,7 @@ export default function ResultsPage() {
                               {group.sources.map((source) => (
                                 <span
                                   key={`${group.category}-${source}`}
-                                  className="inline-flex rounded-full bg-[#dbe8e5] px-2.5 py-[3px] text-[0.72rem] font-medium text-[#2f7f75]"
+                                  className="inline-flex rounded-full bg-[#fff3cd] px-2.5 py-[3px] text-[0.72rem] font-medium text-[#6b4b0f]"
                                 >
                                   {source}
                                 </span>
@@ -886,12 +1027,35 @@ export default function ResultsPage() {
               </button>
             </div>
           </CardContent>
+          ) : null}
         </Card>
       </div>
 
+      <section className="rounded-2xl border border-white/65 bg-white/70 px-6 py-2 shadow-[0_10px_28px_rgba(20,40,29,0.06)]">
+        <Accordion type="single" collapsible>
+          <AccordionItem value="results-hinweis" className="border-b-0">
+            <AccordionTrigger className="text-lg font-normal text-ink no-underline hover:no-underline">
+              <span className="flex items-center gap-3">
+                <Info className="h-5 w-5 text-black" />
+                Hinweis
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="text-sm leading-relaxed text-ink/75">
+              Diese Analyse dient der unterstützenden Vorprüfung (ASP Stufe I) und ersetzt keine fachliche Gutachterleistung oder Rechtsberatung. Die Bewertung „ASP II nicht erforderlich“ basiert auf standardisierten Kriterien (§ 44 BNatSchG), ist jedoch unverbindlich.
+              <br />
+              <br />
+              Rechtsgrundlage: § 44 BNatSchG – Artenschutzverbote
+              <br />
+              <br />
+              kadia.earth übernimmt keine Haftung für behördliche Entscheidungen.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+
       {selectedCompensation ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-          <div className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-2xl border border-white/60 bg-white shadow-[0_30px_90px_rgba(15,23,42,0.35)]">
+          <div className="max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-2xl border border-white/60 bg-white shadow-[0_30px_90px_rgba(15,23,42,0.35)]">
             <div className="flex items-start justify-between border-b border-slate-200 px-5 py-4">
               <div>
                 <h3 className="text-xl font-semibold text-ink">{selectedCompensation.art}</h3>
@@ -899,7 +1063,10 @@ export default function ResultsPage() {
               </div>
               <button
                 type="button"
-                onClick={() => setSelectedCompensation(null)}
+                onClick={() => {
+                  setSelectedCompensation(null);
+                  setShowCompensationHeatmap(false);
+                }}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink/60 transition hover:bg-[#eff5f2] hover:text-ink"
                 aria-label="Popup schliessen"
               >
@@ -909,17 +1076,35 @@ export default function ResultsPage() {
 
             <div className="max-h-[80vh] overflow-y-auto px-5 py-4">
               <div className="rounded-2xl app-glass-panel p-3">
-                <ResultAreaMapClient polygon={sessionData.polygon} />
+                <div className="mb-3 flex items-center justify-between">
+                  <p className="text-sm font-medium text-ink/80">Kompensation in der Karte</p>
+                  <button
+                    type="button"
+                    onClick={() => setShowCompensationHeatmap((current) => !current)}
+                    className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                      showCompensationHeatmap
+                        ? "border-[#e7cf7a] bg-[#fff8dc] text-[#6b4b0f]"
+                        : "border-slate-300/70 bg-white/70 text-ink/70 hover:bg-slate-50"
+                    }`}
+                  >
+                    {showCompensationHeatmap ? "Heatmap ausblenden" : "Heatmap anzeigen"}
+                  </button>
+                </div>
+                <ResultAreaMapClient
+                  polygon={sessionData.polygon}
+                  showCompensationHeatmap={showCompensationHeatmap}
+                  heatmapSeed={selectedCompensation?.art ?? "default"}
+                />
               </div>
 
-              <div className="mt-4 space-y-4 rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/65 p-4">
+              <div className="mt-4 space-y-4 rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/65 p-3">
                 <div className="space-y-1">
                   <h4 className="text-[1.08rem] font-semibold tracking-[-0.01em] text-ink">Kompensationsmassnahmen</h4>
                   <p className="text-xs uppercase tracking-[0.12em] text-ink/45">{compensationDetail.compensation.headline}</p>
                 </div>
 
-                <div className="rounded-xl app-glass-panel p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-                  <p className="text-[0.95rem] leading-relaxed text-ink/80">
+                <div className="w-full rounded-xl app-glass-panel px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+                  <p className="w-full max-w-none text-[1rem] leading-relaxed text-ink/80">
                     {compensationDetail.compensation.intro}
                   </p>
                 </div>
